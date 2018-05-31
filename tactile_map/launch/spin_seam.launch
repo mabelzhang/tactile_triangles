@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     10 Mar 2015
+     Modified from ./manual_explore.launch -->
+
+<launch>
+
+  <arg name="sim" default="true" />
+
+  <node pkg="tactile_map" type="spin_seam.py" name="spin_seam" output="screen" />
+
+  <!-- Subscribes to PointCloud2 published by rosrun pcl_ros
+    pcd_to_pointcloud, publishes PointCloud, so that you can access it using
+    human-friendly interface in code. -->
+  <node pkg="tactile_map" type="PointCloud_publisher" name="PointCloud_publisher" output="screen" />
+
+
+  <!-- Simulation on my laptop -->
+  <group if="$(arg sim)">
+    <!-- Publish test pcd file to rostopic -->
+    <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud" output="screen" args="/home/master/courses/13summer/graspingRepo/reFlexHand/clouds/1425950867.187786102_wineGlass_singleProfile.pcd 1 _frame_id:=/base" />
+  </group>
+
+</launch>
+

@@ -1,0 +1,204 @@
+Mabel Zhang
+18 Mar 2015
+
+To run this in combination of ReFlex and Baxter, see baxter_reflex package
+  README.
+
+
+
+Convenient aliases to put in ~/.bashrc:
+alias manual_explore="rosrun tactile_map manual_explore.py"
+alias plot_force_torque="rosrun tactile_map plot_force_torque.py"
+
+
+In simulation, play bag file of recorded /reflex_hand topic, use sim time:
+rosbag play --clock -l sample_tactile_2015-02-11-17-03.bag
+
+
+
+manual_explore.py:
+
+Plot RViz markers and publish PointCloud message of positions that the tactile
+  sensors felt:
+rosrun tactile_map manual_explore.py
+  OR, if want PointCloud2 msg to save to .pcd file, then run this instead:
+roslaunch tactile_map manual_explore.launch
+
+To pause tactile plotting (publishing cloud and normals):
+  This is useful when you need to move the hand around the object before next
+  exploration on the same object. You wouldn't want to record when you touch
+  the hand to move it, and it's not actually touching the object!
+rostopic pub /tactile_map/pause std_msgs/Bool 1
+rostopic pub /tactile_map/pause std_msgs/Bool 0
+
+You can save a PointCloud2 rostopic to pcd files:
+  File names are the header timestamp in the PointCloud2 msg.
+rosrun pcl_ros pointcloud_to_pcd input:=/topic
+
+
+
+spin_seam.py:
+
+Spin the profile seam of an rotationally symmetric object in 360 degrees,
+  using an arbitrary hardcoded orientation of f center axis, arbitrary
+  direction of center axis from the profile, and arbitrary radius (these 
+  three quantities will need to be calculated for a general case, have not
+  worked on that yet):
+
+Pre-requisite: cloud must be published as PointCloud type on /cloud1_pcd
+  rostopic.
+
+  Currently this is implemented in PointCloud_publisher.cpp, which takes a 
+  PointCloud2 published from a PCD file on disk by rosrun pcl_ros 
+  pcd_to_pointcloud file.pcd on /cloud_pcd, and publishes as /cloud1_pcd.
+
+  If you want it to be some other cloud, you have to write a separate publisher
+  that publishes it as PointCloud type, or if you have an existing PointCloud2
+  type, modify PointCloud_publisher.cpp so that it takes the topic name of the
+  existing PointCloud2 in the constructor call.
+
+rosrun pcl_ros pcd_to_pointcloud 1425950867.187786102_wineGlass_singleProfile.pcd 1 _frame_id:=/base
+roslaunch tactile_map spin_seam.launch
+
+
+
+plot_force_torque.py:
+
+Plots force and torque vectors from Baxter wrist sensor, published on rostopic
+  /robot/limb/<side>/endpoint_state .
+
+Vectors are plotted as RViz Marker ARROW type. Magnitude of arrow is in log
+  scale, so that the force in +z for gravity doesn't over-dominate x and y.
+
+rosrun tactile_map plot_force_torque.py
+
+
+
+est_center_axis_ransac.py:
+
+Estimate center axis from contact points, using RANSAC or least squares
+  (option set in script) of average center point of each set of contact points.
+  A set of contact points is >= 3 points from each iteration of contact. If
+  < 3 contacts, the contacts are cached for next iteration.
+
+Plots contact points seen per-iteration, cumulative centroids (average center
+  points), estimated center axis, predicted object shape (uses center axis to
+  spin contact points 360 degs at (height, radius) wrt center axis).
+
+Get contact points in two ways:
+1. randomly select points in a contact cloud previously saved in a PCD file
+2. rostopic /reflex_hand.
+Set pcd:=1 for PCD file, pcd:=0 for using /reflex_hand.
+
+roslaunch tactile_map est_center_axis_ransac.launch pcd:=1
+roslaunch tactile_map est_center_axis_ransac.launch pcd:=0
+
+
+
+explore_fixed_pt.py:
+
+Moves Baxter wrist to a fixed pose (specified in code), or lets user manually
+  move robot. Takes keyboard input to move up or down 1 cm at a time, command
+  guarded_move, lift wrist 10 cm, etc.
+
+Run this script in parallel to est_center_axis_ransac.py, to estimate center
+  axis of an object while moving along and contacting the object.
+
+rosrun tactile_map explore_fixed_pt.py
+
+
+
+est_center_axis_pottmann.py
+
+Estimate center axis from normals, using Pottmann CAD 1999.
+Uses generated shape cloud from spin_seam.py spin_cloud() and implementation of
+  Pottmann in util_geometry.py.
+
+Before running,
+  Set MODE = GEN for generated shape, or MODE = REAL for ReFlex hand on real
+    robot. Set this in __main__.
+
+rosrun tactile_map est_center_axis_pottmann.py
+
+
+
+
+26 Aug 2015
+
+For convenience of using ReFlex Hand for various tasks, I have these
+  standalone nodes:
+
+detect_reflex_contacts.py
+  Standalone contact detection node. Detects contacts by calling
+    get_contacts.py, publishes them in a tactile_map_msgs.Contacts type,
+    and draws RViz markers for the contacts.
+
+  RViz visualize_* functions can be imported to other Python files as library
+    calls too.
+
+  Purpose of this node is to deal with the low level ReFlex driver rostopic
+    information, about which sensor got what pressure value. This node parses
+    through all that and packs it into a tactile_map_msgs.Contacts msg, which
+    is easier for your custom node to pick up information.
+
+    This node also does all the visualization for you, so you don't need to
+    have the visualization 100 times in every single one of your custom files.
+    Just call visualize_contacts() in this file, passing in the sensor info
+    you get from tactile_map_msgs.Contacts msg, and this file will visualize
+    for you. This way, visualization is optional as well, you don't HAVE to
+    visualize if you don't need it.
+
+keyboard_interface.py
+  Standalone keyboard interface, to be used in collaboration with your custom
+    node, as a convenience module.
+  Can take any prompt - your custom node pass the prompt to a topic, and this
+    node picks it up and displays to user.
+  This node publishes anything the user enters (followed by Enter key) to a
+    msg. You custom node is responsible for subscribing to this msg, figuring
+    out what the user said, and doing whatever action you want in response.
+
+  Purpose of this node is to take the keyboard interface chunk out, so you
+    don't have to worry about coding keyboard interaction, and the parallel
+    threading btw keyboard and your main ROS loop.
+    You just code upon what user enter (you receive it as ROS msg), what you
+    do.
+
+explore_fixed_pos.py
+  Standalone keyboard interface, to be used as a keyboard controller for
+    ReFlex Hand control!
+  Predecessor of keyboard_interface.py. Keyboard interface is in main ROS loop,
+    not as elegant as I'd like (subscribe to ROS msg and do action in callback
+    function), but does the job. I don't have time to modify this to use ROS
+    msgs yet.
+  Has keyboard controls to open fingers, guarded_move, cylinder shape, zero
+    fingers, etc. Lots useful functions if you need to interface with ReFlex
+    but don't want to type in the rosservice calls at command line one by one.
+
+  It can also move Baxter endpoint up or down by 1 cm, using inverse
+    kinematics. But IK movement is jagged, and sometimes if you move
+    more than 1 cm (by modifying code), it doesn't necessarily find the closest
+    solution - it might flip entire elbow upside down, to reach the other of
+    the two possible solutions by IK. That might not be what you want.
+    Keeping it 1 cm avoids this problem.
+
+  Purpose of this node is to provide a standalone ReFlex keyboard controller.
+    Usage of this node is usually while you collect data in your custom node
+    (which can have its own separate keyboard interface), run this node in
+    parallel to control the hand's motions.
+  Note this node's sole purpose is to control ReFlex Hand. Do NOT put keys or
+    code for recording data into this node!! This node needs to be
+    independent of anything that's not direct interface with ReFlex driver,
+    for better standalone style and being more reusable.
+
+
+Library functions:
+
+get_contacts.py
+  Import functions from this file, to get raw live ReFlex contacts, from their
+    /reflex_hand message published by driver.
+  Do NOT use this directly, since now I have detect_reflex_contacts.py doing
+    this. Just run:
+    $ rosrun tactile_map detect_reflex_contacts.py
+    and subscribe to the tactile_map_msgs.Contacts msg.
+
+

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     8 Mar 2015 -->
+
+<launch>
+
+  <node pkg="tactile_map" type="manual_explore.py" name="manual_explore" output="screen" />
+
+  <!-- Subscribes to PointCloud published by manual_explore.py, publishes
+    PointCloud2, so that you can save it to PCD easily.
+    rosrun pcl_ros pointcloud_to_pcd input:=/topic -->
+  <node pkg="tactile_map" type="PointCloud2_publisher" name="PointCloud2_publisher" output="screen" />
+
+</launch>
+

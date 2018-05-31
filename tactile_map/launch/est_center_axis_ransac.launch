@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     5 Apr 2015
+     Modified from ./spin_seam.launch
+     On real robot, specify sim:=false -->
+
+<launch>
+
+  <!-- Only specify pcd and txt if sim:=1, else ignored.
+       sim for simulation.
+       pcd is for inputting a PCD file of contact points. Order not recorded.
+       in_record is for inputting a recorded text file of contact points.
+         Order is recorded.
+       Don't set pcd and in_record both to true! Only set one to true. Else
+         will have two inputs, they'll probably conflict in
+         est_center_axis_ransac.py, or one will take priority.
+    -->
+  <arg name="sim" default="true" />
+  <arg name="pcd" default="false" />
+  <arg name="in_record" default="true" />
+
+  <!-- Record current session to text file.
+       Usually use this for real robot, i.e. when sim:=0 -->
+  <arg name="out_record_flag" default="false" />
+
+  <!-- On baxter: /home/zmen/reFlexHand/repo/data_small/cloud_ordered
+       On my laptop: /home/master/graspingRepo/reFlexHand/data_small/cloud_ordered -->
+  <node pkg="tactile_map" type="est_center_axis_ransac.py"
+     name="est_center_axis_ransac" output="screen"
+     args="--out_record_flag $(arg out_record_flag) --out_record_path /home/zmen/reFlexHand/repo/data_small/cloud_ordered"/>
+
+
+  <!-- On real robot
+       (You could do this in simulation too. I just figured you wouldn't want
+       to save the PCD in simulation to another PCD.) -->
+  <group unless="$(arg sim)">
+    <param name="/tactile_map/est_center_axis_ransac/PCD0_LIVE1_TXT2"
+      type="int" value="1" />
+
+    <!-- Subscribes to PointCloud published by manual_explore.py, publishes
+      PointCloud2, so that you can save it to PCD easily.
+      rosrun pcl_ros pointcloud_to_pcd input:=/topic -->
+    <node pkg="tactile_map" type="PointCloud2_publisher"
+       name="PointCloud2_publisher" output="screen" />
+  </group>
+
+
+  <group if="$(arg sim)">
+
+    <!-- Simulation with PCD file -->
+    <group if="$(arg pcd)">
+      <param name="/tactile_map/est_center_axis_ransac/PCD0_LIVE1_TXT2"
+        type="int" value="0" />
+ 
+      <!-- Publish test pcd file to rostopic -->
+      <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud"
+        output="screen" args="/home/master/courses/13summer/graspingRepo/reFlexHand/clouds/1425948743.474750995_rectVase.pcd 1 _frame_id:=/base" />
+ 
+      <!-- Subscribes to PointCloud2 published by rosrun pcl_ros
+        pcd_to_pointcloud, publishes PointCloud, so that you can access it using
+        human-friendly interface in code. -->
+      <node pkg="tactile_map" type="PointCloud_publisher"
+         name="PointCloud_publisher" output="screen" />
+    </group>
+ 
+ 
+    <!-- Simulation with recorded text file of contact points -->
+    <group if="$(arg in_record)">
+      <!-- API http://wiki.ros.org/roslaunch/XML/param -->
+      <param name="/tactile_map/est_center_axis_ransac/PCD0_LIVE1_TXT2"
+        type="int" value="2" />
+ 
+      <param name="/tactile_map/est_center_axis_ransac/in_record_file"
+        type="str" value="/home/zmen/reFlexHand/repo/data_small/cloud_ordered/2015-04-28-02-16_GSK1000ml_upright.txt" />
+        <!--type="str" value="/home/master/graspingRepo/reFlexHand/data_small/cloud_ordered/2015-04-10-18-29_GSK500ml_tilted.txt" /-->
+        <!--type="str" value="/home/master/graspingRepo/reFlexHand/data_small/cloud_ordered/2015-04-10-19-24_GSK1000ml_tilted.txt" /-->
+        <!--type="str" value="/home/master/graspingRepo/reFlexHand/data_small/cloud_ordered/2015-04-10-17-16_GSK1000ml_upright.txt" /-->
+    </group>
+
+
+  </group>
+
+</launch>
+

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     25 Apr 2015
+     Modified from ./est_center_axis_ransac.launch -->
+
+<launch>
+
+  <node pkg="tactile_map" type="est_center_axis_pottmann.py"
+    name="est_center_axis_pottmann" output="screen" />
+
+  <!-- Broadcast a random tilted frame, to test if implementation really
+         works without assumptions. -->
+  <node pkg="tactile_map" type="broadcast_frame.py"
+    name="broadcast_frame" output="screen" />
+ 
+
+</launch>
+
