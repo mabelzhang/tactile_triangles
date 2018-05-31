@@ -11,3 +11,12 @@ It will be tested and instructions written, if I find the time.
 However, all code files were extracted from packages of working code that were tested under ROS Indigo in 2015-2017.
 
 
+## Dependencies
+- ROS + Gazebo (tested under ROS Indigo)
+- PCL
+- Eigen
+- `util` repository under this account.
+
+Check out the repositories under ROS catkin workspace, e.g. `catkin_ws/src`.
+`$ catkin_build`
+
