@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.4">
+  <world name="default">
+    <!--include>
+      <uri>model://ground_plane</uri>
+    </include-->
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <physics type="ode">
+      <!--real_time_update_rate>1000.0</real_time_update_rate-->
+      <!-- scpeters says 0 makes physics updates go as fast as possible.
+         I don't see a difference in speed from the above though... -->
+      <real_time_update_rate>0.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+
+      <gravity>
+        <!-- Remove gravity, so hand can be moved to arbitrary poses.
+          This doesn't seem to work. Just use this instead:
+          $ rosservice call /gazebo/set_physics_properties '{gravity: {x: 0.0, y: 0.0, z: 0.0}}' -->
+        <!--0.0 0.0 0.0-->
+        0.0 0.0 -9.81
+      </gravity>
+    </physics>
+
+
+    <!-- Joint position getter and setter plugin
+      To move the hand around in the world, by moving the wrist base_link wrt
+        world link.
+        base_link is mounted on world link by a fixed joint, that's how it
+        doesn't get affected by physics and fall. Setting the fixed joint's
+        pose lets you move hand around in the world.
+     -->
+
+    <plugin name="world_plugin" filename="libworld_plugin.so" />
+
+  </world>
+</sdf>
+

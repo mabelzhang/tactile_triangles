@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+  16 Oct 2015
+
+  Launches ReFlex Gazebo sim.
+ -->
+
+
+<launch>
+
+  <!-- Pass in false if launching from baxter_reflex.launch. Otherwise true.
+    If true, launches everything necessary for a stand-alone hand in Gazebo.
+    If false, does not launch hand_visualizer, reflex_tf_broadcaster,
+      robot_state_publisher, `.` these are launched by baxter_reflex
+      reflex_visualizer.launch. -->
+  <arg name="stand_alone" default="true" />
+
+
+  <!-- Load joint controllers to move fingers.
+      Tutorial: http://gazebosim.org/tutorials?tut=ros_control&cat=connect_ros
+    -->
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find reflex_gazebo)/config/reflex_sim_control.yaml" command="load"/>
+
+  <!-- Load the controllers in the YAML file. ns is namespace in YAML file.
+    Set respawn to true so sample_gazebo.py can kill this node when reloading
+    the hand, and here we respawn one to connect with new hand.-->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="true"
+    output="screen" ns="/rhr_flex_model" args="joint_state_controller preshape_1_position_controller proximal_joint_1_position_controller distal_joint_1_position_controller preshape_2_position_controller proximal_joint_2_position_controller distal_joint_2_position_controller proximal_joint_3_position_controller distal_joint_3_position_controller"/>
+
+  <group if="$(arg stand_alone)">
+    <!-- Convert joint states to TF transforms for rviz, etc.
+      Set respawn to true so sample_gazebo.py can kill this node when reloading
+      the hand, and here we respawn one to connect with new hand.-->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+      respawn="true" output="screen">
+      <!-- Remap to the same namespace as the Gazebo model -->
+      <remap from="/joint_states" to="/rhr_flex_model/joint_states" />
+    </node>
+  </group>
+  
+  
+
+  <!-- Publish /reflex_hand rostopic, rosservices for smart commands. -->
+
+  <!-- Publishes /reflex_hand rostopic, by subscribing to
+    /reflex_gazebo/contact, which is published by the Gazebo ROS Plugin
+    hooked up to the simulated contact sensors.
+    Set respawn to true so sample_gazebo.py can kill this node when reloading
+    the hand, and here we respawn one to connect with new hand.-->
+  <node name="reflex_driver_node" pkg="reflex_gazebo" type="reflex_driver_node.py"
+    respawn="true" output="screen" />
+
+  <!-- Provides rosservices for smart commands like the real hand. Only a
+    few that I need are implemented.
+    Set respawn to true so sample_gazebo.py can kill this node when reloading
+    the hand, and here we respawn one to connect with new hand.-->
+  <node name="reflex_base" pkg="reflex_gazebo" type="reflex_base.py"
+    respawn="true" output="screen" />
+
+
+
+  <!-- tf frames and RViz Markers at contacts -->
+
+  <group if="$(arg stand_alone)">
+
+    <!-- Finger sensors' tf frame broadcaster.
+         This part is from reflex.launch 
+         reflex.yaml puts tf_geometry/* sensor positions on param server.
+         reflex_tf_broadcaster.cpp loads rosparam tf_geometry/* and uses them
+           to publish tf frames for sensors.
+         These frames have capitalized first letter, e.g. Swivel_1 -->
+    <!-- This one has the fore-fingers flipped!!! You don't see it in cylinder
+      preshape, but once you open to spherical, you'll see it!!! -->
+    <!--rosparam file="$(find reflex)/yaml/reflex.yaml" command="load"/-->
+    <!-- This is my good copy -->
+    <rosparam file="$(find baxter_reflex)/reflex.yaml" command="load"/>
+    <node name="reflex_tf_broadcaster" pkg="reflex" type="reflex_tf_broadcaster" output="screen" respawn="true" />
+ 
+    <!-- Publishes /joint_states, by listening to /reflex_hand. Plot RViz Markers
+           for tactile sensors. -->
+    <!--node name="hand_visualizer" pkg="reflex_visualizer" type="hand_visualizer" output="screen" respawn="true"/-->
+    <!-- 24 jan 2017 Better version, modified to work with my custom URDF.
+       It publishes joint values for distal_joint_#, which connects distal_#
+       links with flex_link_#. Otherwise, distal_# are in their own separate
+       tree, not connected to the main tree.
+       The orig version in reflex_visualizer publishes joints for finger[%d],
+       which I replaced in my custom URDF. -->
+    <node name="hand_visualizer_sim" pkg="baxter_reflex" type="hand_visualizer_sim" output="screen" respawn="true"/>
+ 
+    <!-- I don't need this (mainly because MacBook Air doesn't compile
+       baxter_reflex package...) -->
+    <!-- Palm sensors tf frame broadcaster.
+         I wrote this file. Calls reflex_visualizer/hand_visualizer 
+           makePalmMarker().
+         These frames have capitalized first letter, e.g. Palm_1 -->
+    <!--node name="reflex_palm_tf_broadcaster" pkg="baxter_reflex" type="reflex_palm_tf_broadcaster" output="screen" /-->
+
+  </group>
+
+
+</launch>
+

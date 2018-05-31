@@ -1,0 +1,8 @@
+# Mabel Zhang
+# 7 Nov 2015
+
+string model_name
+---
+bool success
+geometry_msgs/Vector3 model_size
+geometry_msgs/Point model_center

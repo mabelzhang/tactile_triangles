@@ -1,0 +1,22 @@
+# Mabel Zhang
+# 8 Nov 2015
+#
+# Reference: See $ rossrv show gazebo_msgs/srv/SetModelState
+#
+# Wrote my own because set_model_state is flakey and kills Gazebo!!! Gosh I
+#   have had enough of the gazebo_ros_pkgs. They don't work, and they break
+#   other things too.
+#
+
+string model_name
+geometry_msgs/Pose pose
+
+# If true, will call physics::gazebo::Model::SetRelativePose(), which is wrt
+#   model's parent.
+# If false, will call physics::gazebo::Model::SetWorldPose(), which is wrt
+#   "world" link, root link of Gazebo
+bool relative
+
+---
+bool success
+

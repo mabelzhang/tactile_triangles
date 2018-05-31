@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <gravity>
+        0.0 0.0 -9.81
+      </gravity>
+    </physics>
+
+    <model name="ball">
+      <link name="link">
+        <!-- z position is radius + thickness of ReFlex Hand, so ball can rest
+               on top of fingers.
+             +x is off-center towards fore-fingers
+             +y is off-center towards finger 1 -->
+        <pose>0.1 -0.05 0.18 0 0 0</pose>
+
+        <collision name="ball_collision">
+          <geometry>
+            <sphere>
+              <radius>0.05</radius>
+            </sphere>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>0.05</radius>
+            </sphere>
+          </geometry>
+        </visual>
+
+        <!-- lib*.so is compiled from a custom C++ file -->
+        <!--sensor name='my_contact' type='contact'>
+          <plugin name="my_plugin" filename="libcontact_tutorial_plugin.so" />
+          <contact>
+            <collision>ball_collision</collision>
+          </contact>
+        </sensor-->
+
+      </link>
+    </model>
+
+
+    <!-- Joint position getter and setter plugin
+      To move the hand around in the world, by moving the wrist base_link wrt
+        world link.
+        base_link is mounted on world link by a fixed joint, that's how it
+        doesn't get affected by physics and fall. Setting the fixed joint's
+        pose lets you move hand around in the world.
+
+      This doesn't work. You can use rosservice call /gazebo/set_model_state,
+        don't need plugin anyway.
+     -->
+
+    <!--plugin name="world_plugin" filename="libworld_plugin.so" /-->
+
+  </world>
+</sdf>
+

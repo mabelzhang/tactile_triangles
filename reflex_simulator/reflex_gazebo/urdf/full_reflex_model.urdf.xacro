@@ -1,0 +1,1454 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang modified by adding inertial params and sensor links for Gazebo
+     14 Oct 2015
+
+     Ref: http://gazebosim.org/tutorials?tut=inertia&cat=build_robot -->
+<!-- TODO 27 Jan 2017: I realized that collision boxes should not be the
+  actual mesh, because it's too many triangles and they are always colliding.
+  Maybe making them simpler boxes would actually make my Gazebo sim smoother
+  too, with hand breaking less??? But problem is that I NEED accurate collision
+  for Gazebo sim, in order to get the tactile contact points exact!!! 
+  But I imagine the boxes can still be simple, because for the fingers, a box
+  suffices.
+  TODO Copy <collision> tags from my real robot URDF,
+  full_reflex_model_nobrackets_noflexlinks.urdf.xacro. Those are used for
+  MoveIt. See if they work well enough for Gazebo. See if they reduce hand
+  breakage!! -->
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="rhr_flex_model">
+
+  <!-- Mabel:
+    Import all Gazebo-customization elements, including Gazebo colors and
+      simulated sensors -->
+  <xacro:include filename="$(find reflex_gazebo)/urdf/full_reflex_model.gazebo" />
+
+
+
+<!-- ################ ################ ################ ################ ################ ################ -->
+<!-- ################ XACRO PORTION OF THE URDF, FOR MAKING THE FLEXIBLE JOINTS ################ -->
+<!-- ################ ################ ################ ################ ################ ################ -->
+
+	<xacro:property name="flex_length" value="0.016" />
+  <!-- Number of times flex_link macro is called, to make the original links
+    btw proximal and distal -->
+	<xacro:property name="num_steps" value="9" />
+	<xacro:property name="prox_length" value="0.060" />
+	<xacro:property name="pi" value="3.1415" />
+
+  <!-- Mabel: Just use Gazebo/DarkGrey -->
+ 	<xacro:macro name="base_color">
+ 		<color rgba="0.22 0.22 0.22 1"/>
+ 	</xacro:macro>
+
+  <!-- Mabel: Just use Gazebo/DarkGrey -->
+ 	<xacro:macro name="swivel_color">
+ 		<color rgba="0.22 0.22 0.22 1"/>
+ 	</xacro:macro>
+
+  <!-- Mabel: Just use Gazebo/Grey -->
+ 	<xacro:macro name="proximal_color">
+ 		<color rgba="0.35 0.35 0.35 1"/>
+ 	</xacro:macro>
+
+  <!-- Mabel: Just use Gazebo/Grey -->
+ 	 <xacro:macro name="distal_color">
+ 		<color rgba="0.35 0.35 0.35 1"/>
+ 	</xacro:macro>
+
+  <!-- Mabel: Just use Gazebo/FlatBlack -->
+ 	<xacro:macro name="flex_color">
+ 		<color rgba="0.2 0.2 .2 1"/>
+ 	</xacro:macro>
+
+  <!-- Mabel: Just use Gazebo/RedBright -->
+  <xacro:macro name="pad_color">
+    <color rgba="0.6 0.0 0.0 1"/>
+    <!--    <color rgba="0.686 0.0706 0.8039 1"/> -->
+  </xacro:macro>  
+
+  <!-- Mabel: Commented out, because this creates two parents for distal_#,
+     proximal_1 and this. Not allowed, SDF throws warning, and Gazebo throws
+     error. For physics in Gazebo, these links don't matter (they are the thin
+     slices making up the rubber segment btw proximal and distal links).
+     We do need the proximal_1 as parent, because that has .STL geometry.
+     So we remove all these links.
+
+     Re: In fact, you can just comment out the _to_dist joint. That is the
+       joint causing the second parent.
+     Still commented these out, because we don't need them. They also make
+       physics bounce the finger links out into space, probably because they
+       are too close to each other, colliding or something (even though I did
+       not add <collision> tag to them. -->
+	<!-- Macro to make each part of the link -->
+	<!--xacro:macro name="flex_link" params="finger_id flex_id">
+		<link name="finger[${finger_id}]/flex_link[${flex_id}]">
+			<visual>
+				<geometry>
+					<box size="${flex_length/num_steps*1.25} 0.014 0.006"/>
+				</geometry>
+				<material name="dark gray">
+					<xacro:flex_color/>
+				</material>
+			</visual-->
+
+      <!-- Mabel -->
+      <!--inertial-->
+        <!-- Obtained using a box created in Blender, with dimensions
+          from flex_length = 0.016, num_steps = 9, hence x y z =
+          0.00222222 0.014 0.006. -->
+        <!--origin xyz="${flex_length/num_steps*1.25*0.5} 0.007 0.003"/-->
+        <!-- <visual> box size halved. Not sure where "box" geometry is
+          centered. If centered at 0 0 0, then CoM is simply at 0 0 0. -->
+        <!--origin xyz="0 0 0"/-->
+        <!-- Mesh Volume from MeshLab -->
+        <!--mass value="0.000373"/>
+        <inertia
+          ixx="0.00000001" ixy="0.0" ixz="0.0"
+                           iyy="0.0"  iyz="0.0"
+                                             izz="0.00000001"/>
+      </inertial>
+
+		</link>
+	</xacro:macro-->
+
+	<!-- Macro to make one flex body link to the next -->
+	<!--xacro:macro name="flex_joint" params="finger_id link_parent link_child">
+		<joint name="finger[${finger_id}]/flex_joint_from_${link_parent}_to_${link_child}" type="continuous">
+			<parent link="finger[${finger_id}]/flex_link[${link_parent}]"/>
+			<child link="finger[${finger_id}]/flex_link[${link_child}]"/>
+			<origin xyz="${flex_length/num_steps} 0 0" />
+			<axis xyz="0 -1 0"/>
+		</joint>
+	</xacro:macro-->
+
+	<!-- Macro to make the joint from proximal to first link and from last link to distal  -->
+	<!--xacro:macro name="flex_to_segment_joint" params="finger_id">
+		<joint name="finger[${finger_id}]/flex_joint_from_prox_to_1" type="continuous">
+			<parent link="proximal_${finger_id}"/>
+			<child link="finger[${finger_id}]/flex_link[1]"/>
+			<origin xyz="${prox_length} 0 0.003"/>
+			<axis xyz="0 -1 0"/>
+		</joint-->
+
+    <!-- Mabel: Don't link to distal. It makes distal have two parents
+       (proximal_# and this flex_link[#]), which is not allowed! -->
+		<!--joint name="finger[${finger_id}]/flex_joint_from_${num_steps}_to_dist" type="continuous">
+			<parent link="finger[${finger_id}]/flex_link[${num_steps}]"/>
+			<child link="distal_${finger_id}"/>
+			<origin xyz="${flex_length/num_steps-0.01} 0 0.003"/>
+			<axis xyz="0 -1 0"/>
+		</joint-->
+	<!--/xacro:macro-->
+
+	<!--xacro:flex_link finger_id="1" flex_id="1"/>	<xacro:flex_link finger_id="1" flex_id="2"/>	<xacro:flex_link finger_id="1" flex_id="3"/>
+	<xacro:flex_link finger_id="1" flex_id="4"/>	<xacro:flex_link finger_id="1" flex_id="5"/>	<xacro:flex_link finger_id="1" flex_id="6"/>
+ 	<xacro:flex_link finger_id="1" flex_id="7"/>	<xacro:flex_link finger_id="1" flex_id="8"/>	<xacro:flex_link finger_id="1" flex_id="9"/>
+	<xacro:flex_joint finger_id="1" link_parent="1" link_child="2"/>	<xacro:flex_joint finger_id="1" link_parent="2" link_child="3"/>
+	<xacro:flex_joint finger_id="1" link_parent="3" link_child="4"/>	<xacro:flex_joint finger_id="1" link_parent="4" link_child="5"/>
+	<xacro:flex_joint finger_id="1" link_parent="5" link_child="6"/> 	<xacro:flex_joint finger_id="1" link_parent="6" link_child="7"/>
+	<xacro:flex_joint finger_id="1" link_parent="7" link_child="8"/>	<xacro:flex_joint finger_id="1" link_parent="8" link_child="9"/>
+ 	<xacro:flex_to_segment_joint finger_id="1"/>
+
+	<xacro:flex_link finger_id="2" flex_id="1"/>	<xacro:flex_link finger_id="2" flex_id="2"/>	<xacro:flex_link finger_id="2" flex_id="3"/>
+	<xacro:flex_link finger_id="2" flex_id="4"/>	<xacro:flex_link finger_id="2" flex_id="5"/>	<xacro:flex_link finger_id="2" flex_id="6"/>
+ 	<xacro:flex_link finger_id="2" flex_id="7"/>	<xacro:flex_link finger_id="2" flex_id="8"/>	<xacro:flex_link finger_id="2" flex_id="9"/>
+	<xacro:flex_joint finger_id="2" link_parent="1" link_child="2"/>	<xacro:flex_joint finger_id="2" link_parent="2" link_child="3"/>
+	<xacro:flex_joint finger_id="2" link_parent="3" link_child="4"/>	<xacro:flex_joint finger_id="2" link_parent="4" link_child="5"/>
+	<xacro:flex_joint finger_id="2" link_parent="5" link_child="6"/> 	<xacro:flex_joint finger_id="2" link_parent="6" link_child="7"/>
+	<xacro:flex_joint finger_id="2" link_parent="7" link_child="8"/>	<xacro:flex_joint finger_id="2" link_parent="8" link_child="9"/>
+ 	<xacro:flex_to_segment_joint finger_id="2"/>
+
+	<xacro:flex_link finger_id="3" flex_id="1"/>	<xacro:flex_link finger_id="3" flex_id="2"/>	<xacro:flex_link finger_id="3" flex_id="3"/>
+	<xacro:flex_link finger_id="3" flex_id="4"/>	<xacro:flex_link finger_id="3" flex_id="5"/>	<xacro:flex_link finger_id="3" flex_id="6"/>
+ 	<xacro:flex_link finger_id="3" flex_id="7"/>	<xacro:flex_link finger_id="3" flex_id="8"/>	<xacro:flex_link finger_id="3" flex_id="9"/>
+	<xacro:flex_joint finger_id="3" link_parent="1" link_child="2"/>	<xacro:flex_joint finger_id="3" link_parent="2" link_child="3"/>
+	<xacro:flex_joint finger_id="3" link_parent="3" link_child="4"/>	<xacro:flex_joint finger_id="3" link_parent="4" link_child="5"/>
+	<xacro:flex_joint finger_id="3" link_parent="5" link_child="6"/> 	<xacro:flex_joint finger_id="3" link_parent="6" link_child="7"/>
+	<xacro:flex_joint finger_id="3" link_parent="7" link_child="8"/>	<xacro:flex_joint finger_id="3" link_parent="8" link_child="9"/>
+ 	<xacro:flex_to_segment_joint finger_id="3"/-->
+
+
+
+  <!-- Mabel: Adapted from flex_link xacro above, but adjusted x to be full
+     length btw proximal and distal joints, and renamed links and joints.
+   -->
+
+	<xacro:macro name="flex_link" params="finger_id">
+		<link name="flex_link_${finger_id}">
+			<visual>
+        <!-- x is along finger link. z is perpendicular to finger sensing
+          surface.
+          Multiplying flex_length*1.0 here and subsequent x dimensions,
+          instead of the original 1.25. Not sure what the 1.25 was for, but
+          1.25 intersects distal link, will have collision problems. Either
+          make flex_length here *1.25, AND distal_joint_# offset *1.25, or
+          make both just flex_length. I reckon flex_length, not
+          flex_length*1.25, is supposed to be the true flex length. -->
+        <origin xyz="${flex_length*1.0*0.5} 0 0"/>
+				<geometry>
+					<box size="${flex_length*1.0} 0.014 0.006"/>
+				</geometry>
+				<material name="dark gray">
+					<xacro:flex_color/>
+				</material>
+			</visual>
+
+      <!-- Mabel -->
+      <inertial>
+        <origin xyz="${flex_length*1.0*0.5} 0 0"/>
+        <!-- Mesh Volume and inertia from MeshLab, obtained using a box
+          created in Blender, with dimensions x = flex_length = 0.016, y 0.14,
+          z 0.006.
+          Note since flex_joint is a fixed type joint, SDF will eliminate this
+          link and add the geometry and inertia to its parent, the proximal
+          link. The purple boxes still look right in Gazebo, so using fixed
+          type link is fine. -->
+        <mass value="0.002688"/>
+        <inertia
+          ixx="0.000000051968" ixy="0.0" ixz="0.0"
+                           iyy="0.000000065408"  iyz="0.0"
+                                             izz="0.000000101248"/>
+      </inertial>
+
+      <!-- Mabel -->
+      <collision>
+        <origin xyz="${flex_length*1.0*0.5} 0 0"/>
+				<geometry>
+					<box size="${flex_length*1.0} 0.014 0.006"/>
+				</geometry>
+      </collision>
+		</link>
+  </xacro:macro>
+
+	<!-- Macro to make the joint from proximal to first link and from last link to distal  -->
+	<xacro:macro name="flex_joint" params="finger_id">
+		<joint name="flex_joint_${finger_id}" type="fixed">
+			<parent link="proximal_${finger_id}"/>
+			<child link="flex_link_${finger_id}"/>
+			<origin xyz="${prox_length} 0 0.003"/>
+			<axis xyz="0 -1 0"/>
+		</joint>
+	</xacro:macro>
+
+  <xacro:flex_link finger_id="1" />
+  <xacro:flex_link finger_id="2" />
+  <xacro:flex_link finger_id="3" />
+
+  <xacro:flex_joint finger_id="1" />
+  <xacro:flex_joint finger_id="2" />
+  <xacro:flex_joint finger_id="3" />
+
+
+
+
+<!-- ################ ################ ################ ################ ################ ################ -->
+<!-- ################ THE SECTION CREATED BY SOLIDWORKS EXPORTER, CUT AND PASTE THIS IN HERE ################ -->
+<!-- ################ YOU CAN ALTER THE COLORS FROM HERE ################ -->
+<!-- ################ COMMENT OUT ALL dist*_joint PIECES OF THIS URDF SO THE FLEX JOINTS CAN LINK UP ################ -->
+<!-- ################ ################ ################ ################ ################ ################ -->
+
+  <!-- Mabel added.
+    Rigidly attach to the world/base_link
+    Ref: http://gazebosim.org/tutorials/?tut=ros_urdf -->
+  <!--link name="world"/-->
+  <!-- Use type="floating" to allow rosservice call /gazebo/set_model_state to 
+    move hand around.
+    Use "fixed" if absolutely want to disallow all DOFs.
+    Use "revolute" with 0 limits if want to access this joint in plugins, else
+      it gets removed by SDF.
+    Ref: http://wiki.ros.org/urdf/XML/joint -->
+  <!--joint name="world_to_base_link" type="fixed"-->
+  <!--joint name="world_to_base_link" type="floating"-->
+  <!-- Not using this joint anymore, because Detach() seg faults, it's a Gazebo
+     bug. Now just using SetWorldPose() in each OnUpdate(). So this joint is
+     useless to me now. -->
+  <!--joint name="world_to_base_link" type="revolute">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0"/>
+    <limit effort="0" velocity="0" lower="0" upper="0" />
+  </joint-->
+
+
+  <link
+    name="base_link">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:base_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel added. Get .stl model dimensions in Blender. Shift it into the
+      right position by enable RobotModel > Collision Enabled in RViz. Each
+      time you republish the URDF, disable and re-enable the RobotModel to see
+      refreshed result. -->
+    <collision>
+      <origin xyz="0.014 0 0.051" rpy="0 0 0" /> 
+      <geometry>
+        <box size="0.128 0.099 0.085" />
+      </geometry>
+
+      <!--origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/base_link.stl" />
+      </geometry-->
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.006633 -0.000192 0.042664"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.271197"/>
+      <inertia
+        ixx="0.00035015" ixy="-0.00000237" ixz="-0.00000830"
+                         iyy="0.00052174"  iyz="-0.00000051"
+                                           izz="0.00061823"/>
+    </inertial>
+  </link>
+  <link
+    name="pad">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/pad.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/pad.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000001 0.008858 0.013059"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.113819"/>
+      <inertia
+        ixx="0.00010653" ixy="-0.00000000" ixz="-0.00000001"
+                       iyy="0.00018331"  iyz="-0.00000149"
+                                       izz="0.00008642"/>
+    </inertial>
+  </link>
+  <joint
+    name="pad_joint"
+    type="fixed">
+    <origin
+      xyz="0.02 0 0.063"
+      rpy="1.5707963267949 5.55111512312578E-17 -1.5707963267949" />
+    <parent
+      link="base_link" />
+    <child
+      link="pad" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="swivel_1">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/swivel_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:swivel_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/swivel_1.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.005259 -0.000001 0.011236"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.012584"/>
+      <inertia
+        ixx="0.00000232" ixy="0.00000000" ixz="-0.00000041"
+                         iyy="0.00000177"  iyz="0.00000000"
+                                           izz="0.00000237"/>
+    </inertial>
+  </link>
+  <joint
+    name="preshape_1"
+    type="revolute">
+    <!-- Mabel: None of the joints are really continuous. They should all be
+      revolute.-->
+    <!--type="continuous"-->
+    <origin
+      xyz="0.0503973683071414 -0.026 0.063"
+      rpy="6.75550818663469E-16 1.97993848419069E-16 -2.77555756156289E-16" />
+    <parent
+      link="base_link" />
+    <child
+      link="swivel_1" />
+    <axis
+      xyz="0 0 -1" />
+    <!-- Mabel. Limits from reflex/src/reflex/reflex_base_services.py PRESHAPE_MAX -->
+    <limit effort="2.5" velocity="1.0" lower="0" upper="1.6" />
+  </joint>
+  <link
+    name="proximal_1">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/proximal_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:proximal_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/proximal_1.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.024094 0.000000 0.000819"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.017012"/>
+      <inertia
+        ixx="0.00000076" ixy="-0.00000000" ixz="-0.00000023"
+                         iyy="0.00000735"  iyz="-0.00000000"
+                                           izz="0.00000714"/>
+    </inertial>
+  </link>
+  <joint
+    name="proximal_joint_1"
+    type="revolute">
+    <!--type="continuous"-->
+    <origin
+      xyz="0.01 0 0.0186"
+      rpy="-6.20039667432211E-16 2.40507565059625E-17 2.22044604925031E-16" />
+    <parent
+      link="swivel_1" />
+    <child
+      link="proximal_1" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- Mabel -->
+    <limit effort="2.5" velocity="1.0" lower="0" upper="3.14" />
+  </joint>
+  <link
+    name="proximal_pad_1">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/proximal_pad_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/proximal_pad_1.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000000 0.012215 -0.034120"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.003393"/>
+      <inertia
+        ixx="0.00000057" ixy="-0.0" ixz="-0.0"
+                         iyy="0.00000061"  iyz="0.0"
+                                           izz="0.00000006"/>
+    </inertial>
+  </link>
+  <joint
+    name="prox1_pad_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5707963267949 0 -1.5707963267949" />
+    <parent
+      link="proximal_1" />
+    <child
+      link="proximal_pad_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="distal_1">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/distal_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:distal_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/distal_1.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.015422 -0.000000 0.000877"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.005978"/>
+      <inertia
+        ixx="0.00000019" ixy="-0.0" ixz="-0.00000006"
+                         iyy="0.00000070"  iyz="0.0"
+                                           izz="0.00000071"/>
+    </inertial>
+  </link>
+  <joint
+    name="distal_joint_1"
+    type="revolute">
+    <!--type="continuous"-->
+    <!--origin
+      xyz="0.0760000000000001} 0 0.00250000000000002"
+      rpy="0 0 0" />
+    <parent
+      link="proximal_1" /-->
+    <!-- Mabel, after adding rigid link btw proximal and distal links. Since
+       distal link cannot have two parents (violates SDF and Gazebo rules),
+       flex link and proximal link cannot both be distal's parent. So we need
+       to link in serial like so, not in parallel:
+         proximal -> prox_to_flex_joint -> flex_link -> flex_to_distal_joint
+           -> distal.
+       We'll ust the distal_joint_# as the joint from flex to distal.
+       Joint from prox to flex, and flex_link, are at top of file.
+     -->
+    <origin
+      xyz="${flex_length} 0 0.00250000000000002"
+      rpy="0 0 0" />
+    <parent
+      link="flex_link_1" />
+    <child
+      link="distal_1" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- Mabel -->
+    <limit effort="0.25" velocity="1.0" lower="0" upper="2.74" />
+  </joint>
+  <link
+    name="distal_pad_1">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/distal_pad_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/distal_pad_1.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000000 0.011884 -0.097534"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.002782"/>
+      <inertia
+        ixx="0.00000030" ixy="-0.0" ixz="0.0"
+                         iyy="0.00000034"  iyz="-0.00000002"
+                                           izz="0.00000005"/>
+    </inertial>
+  </link>
+  <joint
+    name="dist1_pad_joint"
+    type="fixed">
+    <origin
+      xyz="-0.0760000000000001 0 -0.0025"
+      rpy="1.5707963267949 0 -1.5707963267949" />
+    <parent
+      link="distal_1" />
+    <child
+      link="distal_pad_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="swivel_2">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/swivel_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:swivel_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/swivel_2.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.005259 -0.000001 0.011236"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.012584"/>
+      <inertia
+        ixx="0.00000232" ixy="0.0" ixz="-0.00000041"
+                         iyy="0.00000177"  iyz="0.0"
+                                           izz="0.00000237"/>
+    </inertial>
+  </link>
+  <joint
+    name="preshape_2"
+    type="revolute">
+    <!--type="continuous"-->
+    <origin
+      xyz="0.0503973683071413 0.0259999999999999 0.063"
+      rpy="1.22459340959228E-15 -7.33448407631817E-16 -1.66533453693773E-16" />
+    <parent
+      link="base_link" />
+    <child
+      link="swivel_2" />
+    <axis
+      xyz="0 0 -1" />
+    <!-- Mabel. Limits from reflex/src/reflex/reflex_base_services.py PRESHAPE_MAX -->
+    <limit effort="2.5" velocity="1.0" lower="-1.6" upper="0" />
+  </joint>
+  <link
+    name="proximal_2">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/proximal_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:proximal_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/proximal_2.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.024094 0.000000 0.000819"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.017012"/>
+      <inertia
+        ixx="0.00000076" ixy="-0.0" ixz="-0.00000023"
+                         iyy="0.00000735"  iyz="-0.0"
+                                           izz="0.00000714"/>
+    </inertial>
+  </link>
+  <joint
+    name="proximal_joint_2"
+    type="revolute">
+    <!--type="continuous"-->
+    <origin
+      xyz="0.01 0 0.0186"
+      rpy="-1.16908225836102E-15 9.55493012556849E-16 1.11022302462515E-16" />
+    <parent
+      link="swivel_2" />
+    <child
+      link="proximal_2" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- Mabel -->
+    <limit effort="2.5" velocity="1.0" lower="0" upper="3.14" />
+  </joint>
+  <link
+    name="proximal_pad_2">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/proximal_pad_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/proximal_pad_2.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000000 0.012215 -0.034120"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.003393"/>
+      <inertia
+        ixx="0.00000057" ixy="-0.0" ixz="-0.0"
+                         iyy="0.00000061"  iyz="0.0"
+                                           izz="0.00000006"/>
+    </inertial>
+  </link>
+  <joint
+    name="prox2_pad_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5707963267949 0 -1.5707963267949" />
+    <parent
+      link="proximal_2" />
+    <child
+      link="proximal_pad_2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="distal_2">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/distal_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:distal_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/distal_2.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.015422 -0.000000 0.000877"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.005978"/>
+      <inertia
+        ixx="0.00000019" ixy="-0.0" ixz="-0.00000006"
+                         iyy="0.00000070"  iyz="0.0"
+                                           izz="0.00000071"/>
+    </inertial>
+  </link>
+  <joint
+    name="distal_joint_2"
+    type="revolute">
+    <!--type="continuous"-->
+    <!--origin
+      xyz="0.0760000000000001 0 0.00249999999999997"
+      rpy="0 0 0" />
+    <parent
+      link="proximal_2" /-->
+    <!-- Mabel -->
+    <origin
+      xyz="${flex_length} 0 0.00249999999999997"
+      rpy="0 0 0" />
+    <parent
+      link="flex_link_2" />
+    <child
+      link="distal_2" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- Mabel -->
+    <limit effort="0.25" velocity="1.0" lower="0" upper="2.74" />
+  </joint>
+  <link
+    name="distal_pad_2">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/distal_pad_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/distal_pad_2.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000000 0.011884 -0.097534"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.002782"/>
+      <inertia
+        ixx="0.00000030" ixy="-0.0" ixz="0.0"
+                         iyy="0.00000034"  iyz="-0.00000002"
+                                           izz="0.00000005"/>
+    </inertial>
+  </link>
+  <joint
+    name="dist2_pad_joint"
+    type="fixed">
+    <origin
+      xyz="-0.0760000000000001 0 -0.0025"
+      rpy="1.5707963267949 0 -1.5707963267949" />
+    <parent
+      link="distal_2" />
+    <child
+      link="distal_pad_2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="proximal_3">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/proximal_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:proximal_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/proximal_3.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.024094 0.000000 0.000819"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.017012"/>
+      <inertia
+        ixx="0.00000076" ixy="-0.0" ixz="-0.00000023"
+                         iyy="0.00000735"  iyz="-0.0"
+                                           izz="0.00000714"/>
+    </inertial>
+  </link>
+  <joint
+    name="proximal_joint_3"
+    type="revolute">
+    <!--type="continuous"-->
+    <origin
+      xyz="-0.0299999999999996 0 0.0816000000000002"
+      rpy="-5.55111512312578E-17 -2.22044604925031E-16 3.14159265358979" />
+    <parent
+      link="base_link" />
+    <child
+      link="proximal_3" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- Mabel -->
+    <limit effort="2.5" velocity="1.0" lower="0" upper="3.14" />
+  </joint>
+  <link
+    name="proximal_pad_3">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/proximal_pad_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/proximal_pad_3.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000000 0.012215 -0.034120"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.003393"/>
+      <inertia
+        ixx="0.00000057" ixy="-0.0" ixz="-0.0"
+                         iyy="0.00000061"  iyz="0.0"
+                                           izz="0.00000006"/>
+    </inertial>
+  </link>
+  <joint
+    name="prox3_pad_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5707963267949 1.22460635382238E-16 -1.5707963267949" />
+    <parent
+      link="proximal_3" />
+    <child
+      link="proximal_pad_3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="distal_3">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/distal_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:distal_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/distal_3.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.015422 -0.000000 0.000877"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.005978"/>
+      <inertia
+        ixx="0.00000019" ixy="-0.0" ixz="-0.00000006"
+                         iyy="0.00000070"  iyz="0.0"
+                                           izz="0.00000071"/>
+    </inertial>
+  </link>
+  <joint
+    name="distal_joint_3"
+    type="revolute">
+    <!--type="continuous"-->
+    <!--origin
+      xyz="0.0760000000000001 0 0.0025"
+      rpy="-1.48887961834512E-45 -1.0995850059156E-76 -7.38531841236285E-32" />
+    <parent
+      link="proximal_3" /-->
+    <!-- Mabel -->
+    <origin
+      xyz="${flex_length} 0 0.0025"
+      rpy="0 0 0" />
+    <parent
+      link="flex_link_3" />
+    <child
+      link="distal_3" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- Mabel -->
+    <limit effort="0.25" velocity="1.0" lower="0" upper="2.74" />
+  </joint>
+  <link
+    name="distal_pad_3">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://reflex_visualizer/meshes/distal_pad_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <xacro:pad_color/>
+      </material>
+    </visual>
+
+    <!-- Mabel -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://reflex_gazebo/meshes/collision/distal_pad_3.stl" />
+      </geometry>
+    </collision>
+
+    <!-- Mabel -->
+    <inertial>
+      <!-- Center of Mass from MeshLab -->
+      <origin xyz="0.000000 0.011884 -0.097534"/>
+      <!-- Mesh Volume from MeshLab -->
+      <mass value="0.002782"/>
+      <inertia
+        ixx="0.00000030" ixy="-0.0" ixz="0.0"
+                         iyy="0.00000034"  iyz="-0.00000002"
+                                           izz="0.00000005"/>
+    </inertial>
+  </link>
+  <joint
+    name="dist3_pad_joint"
+    type="fixed">
+    <origin
+      xyz="-0.0760000000000001 0 -0.0025"
+      rpy="1.5707963267949 -1.22460635382238E-16 -1.5707963267949" />
+    <parent
+      link="distal_3" />
+    <child
+      link="distal_pad_3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+
+
+
+
+
+<!-- ################ ################ ################ ################ ################ ################ -->
+<!-- ################ THIS SECTION LINKS THE MARKERS (TACTILE DATA) TO THE CAD MESH ################ -->
+<!-- ################ COPY AND PASTE THIS FROM urdf/homemade_marker_portion_urdf  ################ -->
+<!-- ################ ################ ################ ################ ################ ################ -->
+
+  <joint name="base_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_tactile" />
+  </joint>
+
+  <link name="base_tactile"/>
+
+  <link name="proximal_1_tactile">
+    <!-- Mabel: Added nonzero mass so link doesn't disappear in SDF -->
+    <inertial>
+      <mass value="0.001"/>
+      <inertia
+        ixx="0.000000001" ixy="0.0" ixz="0.0"
+                       iyy="0.000000001"  iyz="0.0"
+                                         izz="0.000000001"/>
+    </inertial>
+  </link>
+
+  <!-- Mabel: Defining as explicit revolute, with 0 limits, so child link shows
+    up explicitly in SDF. Original all _tactile_joint's were type fixed.
+    But defining as revolute means someone (hand_visualizer.cpp) needs to
+    publish the joint values of these joints to /joint_states, otherwise
+    they will not have a tf!!!
+    Changing back to fixed type. `.` I don't know if I need them to be
+    revolute. Why did I want them to show up in sdf anyway? Probably just
+    for debugging when I was still developing this file to be Gazebo-legal!
+    Probably don't need these to be revolute. -->
+  <!--joint name="proximal_1_tactile_joint" type="revolute"-->
+  <joint name="proximal_1_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="proximal_1" />
+    <child link="proximal_1_tactile" />
+    <!--limit effort="0" velocity="0" lower="0" upper="0" /-->
+  </joint>
+
+  <!--joint name="proximal_2_tactile_joint" type="revolute"-->
+  <joint name="proximal_2_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="proximal_2" />
+    <child link="proximal_2_tactile" />
+    <!--limit effort="0" velocity="0" lower="0" upper="0" /-->
+  </joint>
+
+  <link name="proximal_2_tactile">
+    <!-- Mabel: Added nonzero mass so link doesn't disappear in SDF -->
+    <inertial>
+      <mass value="0.001"/>
+      <inertia
+        ixx="0.000000001" ixy="0.0" ixz="0.0"
+                       iyy="0.000000001"  iyz="0.0"
+                                         izz="0.000000001"/>
+    </inertial>
+  </link>
+
+  <!-- 24 Jan 2017: Changing back to fixed, so they show up in robot tree -->
+  <!--joint name="proximal_3_tactile_joint" type="revolute"-->
+  <joint name="proximal_3_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="proximal_3" />
+    <child link="proximal_3_tactile" />
+    <!--limit effort="0" velocity="0" lower="0" upper="0" /-->
+  </joint>
+
+  <link name="proximal_3_tactile">
+    <!-- Mabel: Added nonzero mass so link doesn't disappear in SDF -->
+    <inertial>
+      <mass value="0.001"/>
+      <inertia
+        ixx="0.000000001" ixy="0.0" ixz="0.0"
+                       iyy="0.000000001"  iyz="0.0"
+                                         izz="0.000000001"/>
+    </inertial>
+  </link>
+
+  <!-- 24 Jan 2017: Changing back to fixed, so they show up in robot tree -->
+  <!--joint name="distal_1_tactile_joint" type="revolute"-->
+  <joint name="distal_1_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="distal_1" />
+    <child link="distal_1_tactile" />
+    <!--limit effort="0" velocity="0" lower="0" upper="0" /-->
+  </joint>
+
+  <link name="distal_1_tactile">
+    <!-- Mabel: Added nonzero mass so link doesn't disappear in SDF -->
+    <inertial>
+      <mass value="0.001"/>
+      <inertia
+        ixx="0.000000001" ixy="0.0" ixz="0.0"
+                       iyy="0.000000001"  iyz="0.0"
+                                         izz="0.000000001"/>
+    </inertial>
+  </link>
+
+  <!-- 24 Jan 2017: Why isn't this revolute??? Did I just forget about it?? TODO
+    That is why in rosrun tf view_frames frames.pdf, distal_2 and distal_3 have
+    children distal_2_tactile and distal_3_tactile, but distal_1 doesn't!!!!
+    The fixed type joints are directly taken as joint values. But the revolute
+    type joints require a publisher for the joint values onto /joint_states,
+    which is hand_visualizer_sim.cpp's job. -->
+  <joint name="distal_2_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="distal_2" />
+    <child link="distal_2_tactile" />
+  </joint>
+
+  <link name="distal_2_tactile">
+    <!-- Mabel: Added nonzero mass so link doesn't disappear in SDF -->
+    <inertial>
+      <mass value="0.001"/>
+      <inertia
+        ixx="0.000000001" ixy="0.0" ixz="0.0"
+                       iyy="0.000000001"  iyz="0.0"
+                                         izz="0.000000001"/>
+    </inertial>
+  </link>
+
+  <!-- 24 Jan 2017: Why isn't this revolute??? Did I just forget about it?? TODO -->
+  <joint name="distal_3_tactile_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="distal_3" />
+    <child link="distal_3_tactile" />
+  </joint>
+
+  <link name="distal_3_tactile">
+    <!-- Mabel: Added nonzero mass so link doesn't disappear in SDF -->
+    <inertial>
+      <mass value="0.001"/>
+      <inertia
+        ixx="0.000000001" ixy="0.0" ixz="0.0"
+                       iyy="0.000000001"  iyz="0.0"
+                                         izz="0.000000001"/>
+    </inertial>
+  </link>
+
+
+
+
+
+
+
+
+
+
+  <!-- Mabel: Positions for the tactile sensors, so can put simulated touch
+      sensors in each link for Gazebo.
+    Calculation of positions are copied from
+      reflex_visualizer/src/hand_visualizer.cpp . This may need to be adjusted
+      accordingly for final release hand (non-beta). -->
+
+  <!-- You could set to 0.006 to raise distal sensors to be at same height
+    as proximal, but this is incorrect. We should follow real robot's tf as
+    much as possible, not raising things artificially. We need simulation to
+    be as real as possible. tf frames affect where we record as object surface
+    points, so it's very important to keep tf close to real world!! -->
+  <xacro:property name="dist_raise_z" value="0.0" />
+
+  <!-- Params from reflex_visualizer/src/hand_visualizer.cpp .
+    dist_z is 0.009 in hand_visualizer.cpp. I don't know why. It's too low for
+      me, it produces a frame too much inside sensor...... well maybe that's
+      just where the true sensor is located in the finger... buuuuut, I don't
+      care about that, do I? Wait I do, because I actually record the sensor
+      position, when I detect a contact on object surface - because there is no
+      other reference for position. So I do want this to be exactly same as
+      real robot. The question is, is 0.009 correct on real robot though???
+    May change back to 0.009 if this doesn't match real robot's tf for
+      individual sensors. Check in RViz and print tf when on real robot. If
+      need to change to 0.009, then in sensor_link macro:xacro, need to add a
+      parameter for inertial_z, and pass in 0 for proximal sensors, 0.06 for
+      distal sensors, so that the inertia purple boxes are at the right place
+      in Gazebo! -->
+	<xacro:property name="x_gap" value="0.008" />
+	<xacro:property name="prox_x_offset" value="0.019" />
+	<xacro:property name="dist_x_offset" value="0.0215" />
+	<xacro:property name="prox_z" value="0.015" />
+	<xacro:property name="dist_z" value="${0.009+dist_raise_z}" />
+	<xacro:property name="sensor_y" value="0" />
+
+  <!-- Params I defined -->
+  <!-- For visualization of thin plate simulated contact sensors ONLY.
+    These should not be used to change tf in any way. -->
+  <!-- Distal is 0.0025 larger in z than proximal, as defined in joint whose
+    parent is proximal_1, child is distal_1. So here, distal should be 0.0025
+    lower than z, so that the sensors appear at same height on both links. -->
+  <xacro:property name="vis_z_prox" value="0.00045" />
+  <xacro:property name="vis_z_dist" value="${0.0040-dist_raise_z}" />
+  <xacro:property name="vis_z_sen9" value="${0.0010-dist_raise_z}" />
+
+
+  <!-- Positions of sensors 1 to 5, all on proximal link -->
+
+  <!-- sensor_id is 1-based. hand_visualizer.cpp has 0-based index.
+    Here, we need to define the position for child sensor.
+    "index" in hand_visualizer.cpp is 1 to 4.
+    "sensor_id" here is 2 to 5. This is the 
+      sensor for which we are defining the position here.
+    So to substitute for "index" in cpp file's formula, put sensor_id-1 here,
+      in order to define positions for 2 to 5. -->
+  <!-- Explicitly making revolute with limits 0, so SDF doesn't ignore this
+     joint. -->
+
+	<xacro:macro name="prox_sensor_joint" params="finger_id sensor_id">
+    <joint name="prox_${finger_id}_tactile_to_sensor_${sensor_id}" type="revolute">
+      <origin xyz="${x_gap * (sensor_id-1) + prox_x_offset} ${sensor_y} ${prox_z}" />
+      <parent link="proximal_${finger_id}_tactile" />
+      <child link="Proximal_${finger_id}/sensor_${sensor_id}" />
+      <limit effort="0" velocity="0" lower="0" upper="0" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:prox_sensor_joint finger_id="1" sensor_id="1" />
+  <xacro:prox_sensor_joint finger_id="1" sensor_id="2" />
+  <xacro:prox_sensor_joint finger_id="1" sensor_id="3" />
+  <xacro:prox_sensor_joint finger_id="1" sensor_id="4" />
+  <xacro:prox_sensor_joint finger_id="1" sensor_id="5" />
+
+  <xacro:prox_sensor_joint finger_id="2" sensor_id="1" />
+  <xacro:prox_sensor_joint finger_id="2" sensor_id="2" />
+  <xacro:prox_sensor_joint finger_id="2" sensor_id="3" />
+  <xacro:prox_sensor_joint finger_id="2" sensor_id="4" />
+  <xacro:prox_sensor_joint finger_id="2" sensor_id="5" />
+
+  <xacro:prox_sensor_joint finger_id="3" sensor_id="1" />
+  <xacro:prox_sensor_joint finger_id="3" sensor_id="2" />
+  <xacro:prox_sensor_joint finger_id="3" sensor_id="3" />
+  <xacro:prox_sensor_joint finger_id="3" sensor_id="4" />
+  <xacro:prox_sensor_joint finger_id="3" sensor_id="5" />
+
+
+  <!-- Positions of sensors 6 to 9, all on distal link -->
+
+  <!-- Same logic as prox_sensor_joint above, for -6. -->
+  <xacro:macro name="dist_sensor_joint" params="finger_id sensor_id">
+    <joint name="dist_${finger_id}_tactile_to_sensor_${sensor_id}" type="revolute">
+      <!-- This should be -6, by reasoning. But it shows that distal CoM
+          in Gazebo is one sensor too far toward finger tip. So had to do -7.
+          Must be a mistake somewhere else, but I can't figure out where.
+        sensor_id+5 offset is because I originally numbered distal sensors
+          6-9, but changed to 1-4. -->
+      <origin xyz="${x_gap * (sensor_id+5-7) + dist_x_offset} ${sensor_y} ${dist_z}" />
+      <parent link="distal_${finger_id}_tactile" />
+      <child link="Distal_${finger_id}/sensor_${sensor_id}" />
+      <limit effort="0" velocity="0" lower="0" upper="0" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:dist_sensor_joint finger_id="1" sensor_id="1" />
+  <xacro:dist_sensor_joint finger_id="1" sensor_id="2" />
+  <xacro:dist_sensor_joint finger_id="1" sensor_id="3" />
+  <xacro:dist_sensor_joint finger_id="1" sensor_id="4" />
+
+  <xacro:dist_sensor_joint finger_id="2" sensor_id="1" />
+  <xacro:dist_sensor_joint finger_id="2" sensor_id="2" />
+  <xacro:dist_sensor_joint finger_id="2" sensor_id="3" />
+  <xacro:dist_sensor_joint finger_id="2" sensor_id="4" />
+
+  <xacro:dist_sensor_joint finger_id="3" sensor_id="1" />
+  <xacro:dist_sensor_joint finger_id="3" sensor_id="2" />
+  <xacro:dist_sensor_joint finger_id="3" sensor_id="3" />
+  <xacro:dist_sensor_joint finger_id="3" sensor_id="4" />
+
+
+  <!-- Define the actual sensors, as links positioned at 0 0 0 (real positions
+     already defined by joints). -->
+
+  <!-- inertia here is only a dummy, defined so that SDF doesn't ignore the
+    link. They are fake. But you do need to make sure they are stable. Too high
+    inertia makes fingers jump around even when not moved! -->
+  <!-- visual here is only a dummy, defined so that we can visually see where
+    the simulated gazebo contact sensors are. Contact sensors are the easiest
+    way to simulate pressure sensors. But since the real robot's pressure
+    sensors reside WITHIN the finger links, we cannot do exactly that. Contact
+    sensors need to be in collision with something to get activated in
+    simulation, so we have to put them on surface of fingers, not within. That
+    is why these visuals are here, to help us see them. -->
+  <!-- collision: see visual. Just a dummy so that contact sensors can work. -->
+  <xacro:macro name="sensor_link" params="link_name finger_id sensor_id visual_z pitch">
+    <link name="${link_name}_${finger_id}/sensor_${sensor_id}">
+      <!-- This mass and inertia are tested to be stable in Gazebo. If you
+        increase by 10, the finger will start jumping very bad when moved.
+        Sensor mass is very very small!-->
+      <inertial>
+        <mass value="0.00001"/>
+        <inertia
+          ixx="0.00000000001" ixy="0.0" ixz="0.0"
+                         iyy="0.00000000001"  iyz="0.0"
+                                           izz="0.00000000001"/>
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 ${visual_z}" rpy="0 ${pitch} 0" />
+        <geometry>
+          <box size="0.006 0.009 0.0003"/>
+        </geometry>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 ${visual_z}" rpy="0 ${pitch} 0" />
+        <geometry>
+          <box size="0.006 0.009 0.0003"/>
+        </geometry>
+      </collision>
+
+    </link>
+  </xacro:macro>
+
+  <xacro:sensor_link link_name="Proximal" finger_id="1" sensor_id="1" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="1" sensor_id="2" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="1" sensor_id="3" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="1" sensor_id="4" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="1" sensor_id="5" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="1" sensor_id="1" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="1" sensor_id="2" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="1" sensor_id="3" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="1" sensor_id="4" visual_z="${vis_z_sen9}" pitch="0.78539816339" />
+
+  <xacro:sensor_link link_name="Proximal" finger_id="2" sensor_id="1" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="2" sensor_id="2" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="2" sensor_id="3" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="2" sensor_id="4" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="2" sensor_id="5" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="2" sensor_id="1" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="2" sensor_id="2" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="2" sensor_id="3" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="2" sensor_id="4" visual_z="${vis_z_sen9}" pitch="0.78539816339" />
+
+  <xacro:sensor_link link_name="Proximal" finger_id="3" sensor_id="1" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="3" sensor_id="2" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="3" sensor_id="3" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="3" sensor_id="4" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Proximal" finger_id="3" sensor_id="5" visual_z="${vis_z_prox}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="3" sensor_id="1" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="3" sensor_id="2" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="3" sensor_id="3" visual_z="${vis_z_dist}" pitch="0" />
+  <xacro:sensor_link link_name="Distal"   finger_id="3" sensor_id="4" visual_z="${vis_z_sen9}" pitch="0.78539816339" />
+
+
+</robot>

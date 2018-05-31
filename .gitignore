@@ -1,0 +1,12 @@
+# Python binaries
+*.pyc
+
+# Compiled binaries
+bin
+build
+lib
+
+# ROS Catkin compiled binaries
+devel
+logs
+

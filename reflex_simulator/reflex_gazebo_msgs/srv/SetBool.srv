@@ -1,0 +1,9 @@
+# 5 Jan 2015
+# From http://docs.ros.org/api/std_srvs/html/srv/SetBool.html
+# I don't know why my ROS Jade doesn't have this
+
+bool data # e.g. for hardware enabling / disabling
+---
+bool success   # indicate successful run of triggered service
+string message # informational, e.g. for error messages
+ 

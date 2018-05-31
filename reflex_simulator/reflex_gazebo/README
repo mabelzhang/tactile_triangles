@@ -1,0 +1,137 @@
+Mabel Zhang
+16 Oct 2015
+
+========
+
+To run my Gazebo simulation:
+$ roslaunch reflex_gazebo reflex_world.launch
+Change .world file to
+  ball_rain.world to test some balls dropping onto fingers' contact sensors
+  reflex.world to load bare hand
+
+Load controllers, contacts publisher, rosservice smart commands - from sim,
+  tf frames publisher for sensors, RViz Markers for contacts - from real hand:
+$ roslaunch reflex_gazebo reflex.launch
+
+If you delete hand and want to respawn it without restarting Gazebo:
+$ rosrun reflex_gazebo spawn_hand.sh
+You do need to relaunch reflex.launch so that the controllers hook up with the
+  new hand.
+
+
+========
+
+To move the hand:
+
+These commands from real hand are implemented for sim:
+
+FK:
+
+This moves both fore-fingers together (unlike raw Gazebo control, which cannot
+  enforce this):
+rosservice call /reflex/move_preshape <finger_number> <radians>
+
+This simulates distal joint to move together with proximal joint, just by a
+  little (unlike raw Gazebo control, which cannot enforce this):
+rosservice call /reflex/move_finger <finger_number> <radians>
+
+
+Preset preshapes:
+rosservice call /reflex/command_smarts cylinder
+rosservice call /reflex/command_smarts spherical
+roservice call /reflex/command_smarts pinch
+
+Preset motions:
+rosservice call /reflex/command_smarts open
+rosservice call /reflex/command_smarts guarded_move
+
+This simply zeros out all contacts in /reflex_hand message, in case you need to
+  "clear cache":
+rosservice call /zero_tactile
+
+
+========
+
+Raw Gazebo controls that don't follow hand's preshape and distal constraints
+  (Useful for testing functionality of controllers):
+
+To move a joint, by joint position:
+$ rostopic pub -1 /rhr_flex_model/preshape_1_position_controller/command std_msgs/Float64 "data: 1"
+
+Joint limits are already defined in URDF, as provided by default ReFlex software. So I assume ros_control respects those limits.
+
+
+Or, an easier way to move the joint in sinusoidal curve is by rqt_gui:
+$ rosrun rqt_gui rqt_gui
+
+See how to add topic publisher here
+http://gazebosim.org/tutorials?tut=ros_control&cat=connect_ros
+Basically:
+Plugins > Topic > Message Publisher,
+  put whatever joint's topic/command/data as rostopic name,
+  put 100 as frequency, abs(sin(i/100)) for the value. Then check the box to
+  start publishing.
+
+If you add a Visualization > Plot plugin, it slows down topic publishing
+  quite a bit, click on the Pause button to see smoother motion in Gazebo.
+
+
+========
+
+To publish /reflex_hand messages:
+This rostopic reflects Gazebo contact sensors.
+$ rosrun reflex_gazebo reflex_driver_node.py
+
+To advertise smart commands ROS service:
+This lets you be able to call guarded_move, open, cylinder, spherical
+  preshapes, etc a few commands like the real hand.
+$ rosrun reflex_gazebo reflex_base.py
+
+Or launch both of the above by:
+$ roslaunch reflex_gazebo reflex.launch
+
+
+========
+
+To debug .xacro or .urdf file:
+
+To convert .urdf.xacro file to .urdf file:
+$ /opt/ros/indigo/share/xacro/xacro.py full_reflex_model.urdf.xacro > full_reflex_model.urdf
+
+
+To convert .urdf file to a tree picture in PDF:
+
+To check a .urdf file is correct:
+ROS Groovy:
+$ rosrun urdfdom check_urdf my_robot.urdf
+ROS Hydro and up:
+$ check_urdf my_robot.urdf
+
+You can also visualize the tree in PDF, I knew it exists! I’ve seen this before!
+$ urdf_to_graphiz my_robot.urdf
+$ evince my_robot.pdf
+
+(You can get urdf_to_graphiz by:
+$ sudo apt-get install liburdfdom-tools )
+
+Ref: http://wiki.ros.org/urdf/Tutorials/Create%20your%20own%20urdf%20file
+
+
+To convert .urdf file to .sdf:
+Gazebo2 and below:
+$ gzsdf print file.urdf > file.sdf
+Gazebo3 and above:
+$ gz sdf -p file.urdf > file.sdf
+
+Ref: http://gazebosim.org/tutorials/?tut=ros_urdf#VerifyingtheGazeboModelWorks
+
+
+========
+
+To get center of mass using MeshLab:
+
+http://gazebosim.org/tutorials?tut=inertia&cat=build_robot
+
+
+
+

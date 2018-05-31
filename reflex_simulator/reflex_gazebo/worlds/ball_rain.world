@@ -1,0 +1,166 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <gravity>
+  0.0 0.0 -9.81
+      </gravity>
+    </physics>
+
+    <!-- x>0 to put on fore-fingers. y<0 to put on finger1. -->
+    <model name="ball_yellow">
+      <link name="link">
+        <!-- z position is radius + thickness of ReFlex Hand, so ball can rest
+               on top of fingers.
+             +x is off-center towards fore-fingers
+             +y is off-center towards finger 1 -->
+        <pose>0.09 -0.02 0.13 0 0 0</pose>
+
+        <collision name="ball_yellow_collision">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- Ref: http://answers.gazebosim.org/question/3336/change-color-of-models/ -->
+            <ambient>1 1 0 1</ambient>
+            <diffuse>1 1 0 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+
+      </link>
+    </model>
+
+
+    <!-- x>0 to put on fore-fingers. y>0 to put on finger2. -->
+    <model name="ball_green">
+      <link name="link">
+        <pose>0.16 0.02 0.16 0 0 0</pose>
+
+        <collision name="ball_green_collision">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- x<0 to put on finger3 (thumb). y=0 to center. -->
+    <model name="ball_magenta">
+      <link name="link">
+        <pose>-0.1 0 0.25 0 0 0</pose>
+
+        <collision name="ball_magenta_collision">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 1 1</ambient>
+            <diffuse>1 0 1 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- x=y=z=0 to put in center of hand, where no sensors are -->
+    <model name="ball_cyan">
+      <link name="link">
+        <pose>0 0 0.22 0 0 0</pose>
+
+        <collision name="ball_cyan_collision">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <!--sphere>
+              <radius>0.02</radius>
+            </sphere-->
+            <box>
+              <size>0.04 0.04 0.04</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 1 1</ambient>
+            <diffuse>0 1 1 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+
+      </link>
+    </model>
+
+  </world>
+</sdf>
+

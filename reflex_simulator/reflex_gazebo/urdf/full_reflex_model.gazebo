@@ -1,0 +1,589 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     16 Oct 2015
+ -->
+
+<robot>
+
+  <!-- Doesn't seem to do anything -->
+  <!--gazebo reference="rhr_flex_model">
+    <static>true</static>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo-->
+
+  <!-- Gazebo colors
+    Color mapping I'm using:
+      base_color Gazebo/DarkGrey
+      swivel_color Gazebo/DarkGrey
+      proximal_color Gazebo/Grey
+      distal_color Gazebo/Grey
+      flex_color Gazebo/FlatBlack
+      pad_color Gazebo/Red
+
+    reference field refers to link name in URDF.
+
+    Tutorial: http://gazebosim.org/tutorials?tut=ros_urdf&cat=connect_ros
+   -->
+
+  <gazebo reference="base_link">
+    <material>Gazebo/DarkGrey</material>
+    <!-- These don't seem to work -->
+    <static>true</static>
+    <!--turnGravityOff>true</turnGravityOff-->
+  </gazebo>
+
+  <gazebo reference="pad">
+    <material>Gazebo/Red</material>
+    <!--material>
+      <ambient>1 0 0 1</ambient>
+      <diffuse>1 0 0 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+    </material-->
+  </gazebo>
+
+  <gazebo reference="swivel_1">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+
+  <gazebo reference="proximal_1">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="proximal_pad_1">
+    <material>Gazebo/Red</material>
+    <!--material>
+      <ambient>1 0 0 1</ambient>
+      <diffuse>1 0 0 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+    </material-->
+  </gazebo>
+
+  <gazebo reference="distal_1">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="distal_pad_1">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="swivel_2">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+
+  <gazebo reference="proximal_2">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="proximal_pad_2">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="distal_2">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="distal_pad_2">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="proximal_3">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="proximal_pad_3">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="distal_3">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="distal_pad_3">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <!-- This is SDF syntax, doesn't work for URDF -->
+  <!--material>
+    <script>
+      <uri>file:///home/master/graspingRepo/reFlexHand/catkin_ws/src/reflex_simulator/reflex_gazebo/urdf/reflex_gazebo.material</uri>
+      <name>pancake/2sides</name>
+    </script>
+  </material-->
+
+
+
+
+  <!-- Controllers
+    To move the joints using ros_control.
+    Refers to joint names in URDF.
+    Tutorial: http://gazebosim.org/tutorials?tut=ros_control&cat=connect_ros -->
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>rhr_flex_model</robotNamespace>
+      <robotParam>/robot_description</robotParam>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo>
+
+
+  <transmission name="tran_preshape_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="preshape_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_preshape_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_proximal_joint_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="proximal_joint_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_proximal_joint_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_distal_joint_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="distal_joint_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_distal_joint_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission name="tran_preshape_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="preshape_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_preshape_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_proximal_joint_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="proximal_joint_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_proximal_joint_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_distal_joint_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="distal_joint_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_distal_joint_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission name="tran_proximal_joint_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="proximal_joint_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_proximal_joint_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_distal_joint_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="distal_joint_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_distal_joint_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+
+
+  <!-- Contact sensors
+    To simulate individual sensors on fingers
+    Refers to joint names in URDF.
+    Tutorial: http://gazebosim.org/tutorials?cat=sensors&tut=contact_sensor&ver=1.9
+      URDF syntax http://answers.gazebosim.org/question/8713/adding-contact-sensor-in-xacro-to-urdf/-->
+
+  <!-- Finger 1 contact sensors -->
+
+  <gazebo reference="Proximal_1/sensor_1">
+    <sensor name="finger_1_sensor_1" type="contact">
+      <plugin name="f1s1_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_1/sensor_1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_1/sensor_2">
+    <sensor name="finger_1_sensor_2" type="contact">
+      <plugin name="f1s2_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_1/sensor_2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_1/sensor_3">
+    <sensor name="finger_1_sensor_3" type="contact">
+      <plugin name="f1s3_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_1/sensor_3_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_1/sensor_4">
+    <sensor name="finger_1_sensor_4" type="contact">
+      <plugin name="f1s4_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_1/sensor_4_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_1/sensor_5">
+    <sensor name="finger_1_sensor_5" type="contact">
+      <plugin name="f1s5_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_1/sensor_5_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_1/sensor_1">
+    <sensor name="finger_1_sensor_6" type="contact">
+      <plugin name="f1s6_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_1/sensor_1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_1/sensor_2">
+    <sensor name="finger_1_sensor_7" type="contact">
+      <plugin name="f1s7_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_1/sensor_2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_1/sensor_3">
+    <sensor name="finger_1_sensor_8" type="contact">
+      <plugin name="f1s8_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_1/sensor_3_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_1/sensor_4">
+    <sensor name="finger_1_sensor_9" type="contact">
+      <plugin name="f1s9_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_1/sensor_4_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+
+  <!-- Finger 2 contact sensors -->
+
+  <gazebo reference="Proximal_2/sensor_1">
+    <sensor name="finger_2_sensor_1" type="contact">
+      <plugin name="f2s1_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_2/sensor_1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_2/sensor_2">
+    <sensor name="finger_2_sensor_2" type="contact">
+      <plugin name="f2s2_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_2/sensor_2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_2/sensor_3">
+    <sensor name="finger_2_sensor_3" type="contact">
+      <plugin name="f2s3_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_2/sensor_3_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_2/sensor_4">
+    <sensor name="finger_2_sensor_4" type="contact">
+      <plugin name="f2s4_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_2/sensor_4_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_2/sensor_5">
+    <sensor name="finger_2_sensor_5" type="contact">
+      <plugin name="f2s5_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_2/sensor_5_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_2/sensor_1">
+    <sensor name="finger_2_sensor_6" type="contact">
+      <plugin name="f2s6_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_2/sensor_1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_2/sensor_2">
+    <sensor name="finger_2_sensor_7" type="contact">
+      <plugin name="f2s7_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_2/sensor_2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_2/sensor_3">
+    <sensor name="finger_2_sensor_8" type="contact">
+      <plugin name="f2s8_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_2/sensor_3_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_2/sensor_4">
+    <sensor name="finger_2_sensor_9" type="contact">
+      <plugin name="f2s9_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_2/sensor_4_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+
+  <!-- Finger 3 contact sensors -->
+
+  <gazebo reference="Proximal_3/sensor_1">
+    <sensor name="finger_3_sensor_1" type="contact">
+      <plugin name="f3s1_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_3/sensor_1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_3/sensor_2">
+    <sensor name="finger_3_sensor_2" type="contact">
+      <plugin name="f3s2_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_3/sensor_2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_3/sensor_3">
+    <sensor name="finger_3_sensor_3" type="contact">
+      <plugin name="f3s3_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_3/sensor_3_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_3/sensor_4">
+    <sensor name="finger_3_sensor_4" type="contact">
+      <plugin name="f3s4_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_3/sensor_4_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Proximal_3/sensor_5">
+    <sensor name="finger_3_sensor_5" type="contact">
+      <plugin name="f3s5_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Proximal_3/sensor_5_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_3/sensor_1">
+    <sensor name="finger_3_sensor_6" type="contact">
+      <plugin name="f3s6_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_3/sensor_1_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_3/sensor_2">
+    <sensor name="finger_3_sensor_7" type="contact">
+      <plugin name="f3s7_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_3/sensor_2_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_3/sensor_3">
+    <sensor name="finger_3_sensor_8" type="contact">
+      <plugin name="f3s8_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_3/sensor_3_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="Distal_3/sensor_4">
+    <sensor name="finger_3_sensor_9" type="contact">
+      <plugin name="f3s9_plugin" filename="libcontact_sensor_plugin.so" />
+      <contact>
+        <!-- This name is not defined by you in URDF, it is defined
+          automatically by SDF, by appending _collision to whatever the parent
+          link's name is. You can use $ gzsdf print file.urdf to find out the
+          name. -->
+        <collision>Distal_3/sensor_4_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+</robot>

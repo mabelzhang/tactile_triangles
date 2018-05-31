@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<!-- 18 Oct 2015 -->
+<!-- From http://gazebosim.org/tutorials?tut=contact_sensor&cat=sensors -->
+
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+     <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <model name="box">
+      <link name="link">
+        <pose>0 0 0.5 0 0 0</pose>
+
+        <collision name="box_collision">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </visual>
+
+        <sensor name='my_contact' type='contact'>
+          <!-- lib*.so is compiled from a custom C++ file -->
+          <plugin name="my_plugin" filename="libcontact_sensor_plugin.so" />
+          <contact>
+            <collision>box_collision</collision>
+          </contact>
+        </sensor>
+
+      </link>
+    </model>
+  </world>
+</sdf>

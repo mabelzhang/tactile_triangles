@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     12 Oct 2015
+     Ref: http://gazebosim.org/tutorials?tut=ros_roslaunch&cat=connect_ros
+       and baxter_gazebo baxter_world.launch -->
+
+<launch>
+
+  <!-- Test if a URDF is standardized for Gazebo - that means it has <inertial>
+    tags with non-zero mass, and non-fixed links so that all links show up. -->
+  <arg name="test_urdf" default="false"/>
+  <arg name="reflex" default="true"/>
+  <!-- Must spawn this if you want controllers. Else controllers won't be
+    loaded. You'd have to spawn hand elsewhere, and then start reflex.launch
+    AFTERWARDS.
+    sample_gazebo.py tried to spawn hand in script, but Gazebo is unstable
+      for that - it stops responding when I delete hand. Only that script
+      would want this arg to be false. For all else, pass in true. -->
+  <arg name="reflex_spawn" default="true"/>
+  <arg name="pr2" default="false"/>
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find reflex_gazebo)/worlds/reflex.world"/>
+    <!-- To see contacts -->
+    <!--arg name="world_name" value="$(find reflex_gazebo)/worlds/ball_rain.world"/-->
+    <!-- Box to test contact sensor plugin -->
+    <!--arg name="world_name" value="$(find reflex_gazebo)/worlds/contact_tutorial.world"/-->
+    <arg name="paused" value="true"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+
+  <!-- Load ReFlex xacro model for Gazebo. This is the core of this script.
+    Ref: http://gazebosim.org/tutorials?tut=ros_roslaunch&cat=connect_ros#XACROExamplewithPR2 -->
+  <group if="$(arg reflex)">
+    <!-- Convert an xacro and put on parameter server -->
+
+    <!-- Use my custom one in my own package, with inertia computed.
+      The default reflex URDF doesn't appear in Gazebo, because it is not
+        standardized for Gazebo, which requires non-zero mass and inertial tag
+        in each link. Colors also require special Gazebo tags. Default URDF
+        also has two parents for distal_1, which errors in Gazebo! -->
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find reflex_gazebo)/urdf/full_reflex_model.urdf.xacro" />
+  </group>
+
+  <group if="$(arg reflex_spawn)">
+    <!-- Spawn a robot into Gazebo -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model reflex" />
+  </group>
+
+
+  <group if="$(arg test_urdf)">
+
+    <!-- xacro -->
+    <param name="robot_description"
+      command="$(find xacro)/xacro.py $(find reflex_gazebo)/urdf/test_robot.urdf.xacro" />
+
+    <!-- URDF file directly. This works -->
+    <!--param name="robot_description"
+     command="cat '$(find reflex_gazebo)/urdf/test_robot.urdf'" /-->
+    <!--param name="robot_description"
+     command="cat '$(find reflex_gazebo)/urdf/physics.urdf'" /-->
+ 
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model r2d2" />
+  </group>
+
+
+  <!-- From tutorial. pr2 xacro. This works. Commented out `.` not all my
+    computers have the pr2_description package. -->
+
+  <!--group if="$(arg pr2)">
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find pr2_description)/robots/pr2.urdf.xacro" />
+ 
+    <node name="spawn_urdf_pr2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model pr2" />
+  </group-->
+
+
+  <!-- From baxter_world.launch. baxter urdf. This works -->
+  <!-- Spawn a robot into Gazebo -->
+
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <!--param name="robot_description"
+   command="cat '$(find baxter_description)/urdf/baxter.urdf'" /-->
+
+  <!--node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find baxter_description)/urdf/baxter.urdf -urdf -z 1 -model baxter" /-->
+
+
+</launch>
+
