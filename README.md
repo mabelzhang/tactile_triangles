@@ -19,6 +19,7 @@ However, all code files were extracted from packages of working code that were t
 - Eigen
 - `util` repository under this account.
 
-Check out the repositories under ROS catkin workspace, e.g. `catkin_ws/src`.
+Check out the repositories under ROS catkin workspace, e.g. `catkin_ws/src`, then run
+
 `$ catkin_build`
 
