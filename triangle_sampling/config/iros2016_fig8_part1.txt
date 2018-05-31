@@ -1,0 +1,27 @@
+#!/bin/bash
+# Copied from real.txt. Added iros2016 subpath.
+
+# 10 Feb 2016
+# Making a new long-path list for plotting 1D histogram intersection
+
+# 2015-08-29, manual collection
+# Object 1: mug1_90tri. Big white cup with water sealed in walls. 90 triangles
+#triangle_sampling/csv_bx_tri/2015-08-29-20-51-52_robo.csv
+# 2015-09-07, semi-auto
+# Object 1: mug1_424tri. Big white cup with water sealed in walls. 424 triangles
+#triangle_sampling/csv_bx_tri/2015-09-07-22-55-55_robo_combo.csv
+# 2015-09-12, semi-auto
+# Object 2: mug2. Metal mug with big handle. 776 triangles
+#   $ cat 2015-09-12-21-02-52_robo.csv 2015-09-12-21-17-09_robo.csv 2015-09-12-21-29-54_robo.csv > 2015-09-12-21-02-52_robo_combo.csv
+triangle_sampling/csv_bx_tri/iros2016/mug_steel/2015-09-12-21-02-52_robo_combo.csv
+# Object 1: round_bottle. Straight symmetric plastic transparent bottle with 5
+#   segments. 825 triangles
+#   $ cat 2015-09-12-18-56-46_robo.csv 2015-09-12-20-41-52_robo.csv > 2015-09-12-18-56-46_robo_combo.csv
+triangle_sampling/csv_bx_tri/iros2016/round_bottle/2015-09-12-18-56-46_robo_combo.csv
+# Object 3: spray_bottle. Green spraybottle. 2182 triangles
+#   $ cat 2015-09-12-21-51-15_robo.csv 2015-09-12-22-15-48_robo.csv 2015-09-12-22-40-23_robo.csv > 2015-09-12-21-51-15_robo_combo.csv
+triangle_sampling/csv_bx_tri/iros2016/spray_bottle/2015-09-12-21-51-15_robo_combo.csv
+# Object 4: hammer. Rubber mallot, yellow and red, standing upside down. 1361
+#   triangles
+#   $ $ cat 2015-09-12-23-41-34_robo.csv 2015-09-12-23-49-21_robo.csv > 2015-09-12-23-41-34_robo_combo.csv
+triangle_sampling/csv_bx_tri/iros2016/hammer/2015-09-12-23-41-34_robo_combo.csv

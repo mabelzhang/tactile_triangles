@@ -1,0 +1,376 @@
+#!/bin/bash
+
+# Copied from models_gazebo_csv.txt
+
+# Mabel Zhang
+# 20 Feb 2016
+#
+# This file is used for IROS 2016.
+#   Train-Gazebo, test-Gazebo. No PCL. All Gazebo.
+# For calculating histograms trained from Gazebo using my reflex_gazebo stack,
+#   for plotting 1d histogram intersection plots, running classification.
+#
+# Histograms should be generated using prune_outlier_triangles.py,
+#   hist_conf.csv outputted to csv_gz_hists, NOT the one in
+#   csv_gz_pclrange_hists.
+#
+# Lines here are manually pasted in, after training in gazebo and running
+#   move_gazebo_files.py.
+#
+
+
+################################################################ archive 3D ##
+
+######## Cup ##
+
+# cup_e9a70951
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/cup/cup_e9a70951.csv
+# Before hand-center bug fix
+#triangle_sampling/csv_gz_tri/cup/cup_e9a70951_2016-02-17-00-45-43_hand.csv
+# After hand-center bug fix.
+#   Ellipsoid in horizontal slices, consecutive points are physically
+#     consecutive so no accumulating across pts above and below obj.
+#   Discovered hand xy-orientation is arbitrary but haven't fixed yet
+#   PALM_THICKNESS 0.08
+triangle_sampling/csv_gz_tri/cup/cup_e9a70951_2016-02-18-20-05-37_hand.csv
+
+triangle_sampling/csv_gz_tri/cup/cup_2b46c83c_2016-02-20-19-09-18_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_4536abec_2016-02-21-19-42-35_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_c635e584_2016-02-23-03-36-51_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_4b05736e_2016-02-23-14-13-39_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_bd93bcdd_2016-02-24-14-05-12_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_b7c960e7_2016-02-25-00-00-29_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_ad07531a_2016-02-25-02-49-25_hand.csv
+triangle_sampling/csv_gz_tri/cup/cup_51e90838_2016-02-25-18-16-49_hand.csv
+
+# Couldn't fix model. Lots vibrations, just trained anyway
+triangle_sampling/csv_gz_tri/cup/cup_baecbac6_2016-02-29-05-08-57_hand.csv
+
+
+######## Teapot ##
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/teapot/teapot_faf62b14.csv
+triangle_sampling/csv_gz_tri/teapot/teapot_faf62b14_2016-02-20-01-12-57_hand.csv
+
+triangle_sampling/csv_gz_tri/teapot/teapot_45398b0a_2016-02-20-16-28-53_hand.csv
+triangle_sampling/csv_gz_tri/teapot/teapot_a5b78cd1_2016-02-21-21-36-21_hand.csv
+triangle_sampling/csv_gz_tri/teapot/teapot_3c659bee_2016-02-23-15-26-02_hand.csv
+triangle_sampling/csv_gz_tri/teapot/milk_jug_87fe197d_2016-02-23-17-36-00_hand.csv
+triangle_sampling/csv_gz_tri/teapot/milk_jug_d4808bdd_2016-02-23-19-05-08_hand.csv
+
+
+######## Tools that aren't hammer ##
+
+# Removing this category because too few objects
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/tool/screwdriver_e054371d.csv
+#triangle_sampling/csv_gz_tri/tool/screwdriver_e054371d_2016-02-20-02-30-27_hand.csv
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/tool/pliers_6a5e5943.csv
+#triangle_sampling/csv_gz_tri/tool/pliers_6a5e5943_2016-02-20-14-27-48_hand.csv
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/tool/wrench_cea2f4ee.csv
+#triangle_sampling/csv_gz_tri/tool/wrench_cea2f4ee_2016-02-20-15-55-08_hand.csv
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/tool/screwdriver_827757e4.csv
+#triangle_sampling/csv_gz_tri/tool/screwdriver_827757e4_2016-02-20-17-49-16_hand.csv
+
+
+##################################################################### 3DNet ##
+
+######## Apple ##
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/apple/118644ba80aa5048ac59fb466121cd17.csv
+triangle_sampling/csv_gz_tri/apple/118644ba80aa5048ac59fb466121cd17_2016-02-19-23-19-33_hand.csv
+
+triangle_sampling/csv_gz_tri/apple/3a92a256ad1e060ec048697b91f69d2_2016-02-21-01-12-55_hand.csv
+triangle_sampling/csv_gz_tri/apple/3feed57a0ccaeae3d00831da6cf87c31_2016-02-21-14-40-13_hand.csv
+triangle_sampling/csv_gz_tri/apple/5647fb465e36a65f7698a203d9aba6a_2016-02-23-20-56-04_hand.csv
+triangle_sampling/csv_gz_tri/apple/420f6d4f07c3109bee5e7ed304cc3a4c_2016-02-23-22-39-14_hand.csv
+triangle_sampling/csv_gz_tri/apple/5d8033555301adea795b7c977db0d889_2016-02-26-00-15-36_hand.csv
+triangle_sampling/csv_gz_tri/apple/805b6d5de8a86cc6319045f7d9cc9742_2016-02-26-01-33-14_hand.csv
+triangle_sampling/csv_gz_tri/apple/b095a1c41447e9da887d2d6e4a6617b3_2016-02-26-23-20-51_hand.csv
+triangle_sampling/csv_gz_tri/apple/bd41ae80776809c09c25d440f3e4e51d_2016-02-29-11-56-07_hand.csv
+triangle_sampling/csv_gz_tri/apple/e9c7104a54ec9140743fecfbc2ad9c98_2016-02-29-12-03-55_hand.csv
+triangle_sampling/csv_gz_tri/apple/fb01ac920e6b68fd7236c5b88164c0b8_2016-02-29-12-35-41_hand.csv
+triangle_sampling/csv_gz_tri/apple/b5366beb7b394f3cdee808f5a4ecffa3_2016-02-29-13-09-22_hand.csv
+
+
+######## Bananas ##
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/banana/473758ca6cb0506ee7697d561711bd2b.csv
+triangle_sampling/csv_gz_tri/banana/473758ca6cb0506ee7697d561711bd2b_2016-02-19-22-51-46_hand.csv
+
+triangle_sampling/csv_gz_tri/banana/7d78e217e0ba160fe2b248b8bb97d290_2016-02-20-20-51-24_hand.csv
+triangle_sampling/csv_gz_tri/banana/Banana_v01_L3_2016-02-22-13-40-04_hand.csv
+triangle_sampling/csv_gz_tri/banana/a62129fa3fe48f0197d8a3751675d89f_2016-02-23-20-17-03_hand.csv
+triangle_sampling/csv_gz_tri/banana/ba0d56295321002718ddbf38fa69c501_2016-02-23-23-25-10_hand.csv
+triangle_sampling/csv_gz_tri/banana/e20b0f4726e07bd81246693279f28fd4_2016-02-24-01-01-56_hand.csv
+
+
+######## Bottle ##
+
+# bottle 109d55a137c042f5760315ac3bf2c13e
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/bottle/109d55a137c042f5760315ac3bf2c13e.csv
+# This looks better than 25 ell_deg_step.
+# 2 ps, 2 rot, 30 ell_deg_step, accum 2 positions, PALM_THICKNESS 0.08
+#   rings_along_dir 'h'
+triangle_sampling/csv_gz_tri/bottle/109d55a137c042f5760315ac3bf2c13e_2016-02-18-21-19-55_hand.csv
+# 2 ps, 2 rot, 25 ell_deg_step, accum 2 positions, PALM_THICKNESS 0.1
+#   rings_along_dir 'h'
+#triangle_sampling/csv_gz_tri/bottle/109d55a137c042f5760315ac3bf2c13e_2016-02-19-00-47-57_hand.csv
+
+triangle_sampling/csv_gz_tri/bottle/114509277e76e413c8724d5673a063a6_2016-02-20-17-50-28_hand.csv
+triangle_sampling/csv_gz_tri/bottle/1cf98e5b6fff5471c8724d5673a063a6_2016-02-21-23-48-02_hand.csv
+triangle_sampling/csv_gz_tri/bottle/1d4480abe9aa45ce51a99c0e19a8a54_2016-02-22-19-13-10_hand.csv
+triangle_sampling/csv_gz_tri/bottle/1ee865178cd126fe3bfd7d6656f05358_2016-02-22-19-59-07_hand.csv
+triangle_sampling/csv_gz_tri/bottle/1ef68777bfdb7d6ba7a07ee616e34cd7_2016-02-24-16-06-35_hand.csv
+triangle_sampling/csv_gz_tri/bottle/3432ee42351384cff4bdca145ed48dc6_2016-02-25-19-17-37_hand.csv
+triangle_sampling/csv_gz_tri/bottle/47ede0c10e36fe309029fc9335eeb05c_2016-02-25-19-51-51_hand.csv
+# A repeat... did it twice. Silly me. Why wasn't this marked in
+#   models_gazebo_csv.txt file!!!????
+#  triangle_sampling/csv_gz_tri/bottle/47ede0c10e36fe309029fc9335eeb05c_2016-02-29-02-33-34_hand.csv
+# Terrible PCD. Terrible object. Lots of vibrations
+triangle_sampling/csv_gz_tri/bottle/a1bc36109cd382b78340c8802f48c170_2016-02-25-21-01-33_hand.csv
+# Nice object
+triangle_sampling/csv_gz_tri/bottle/a86d587f38569fdf394a7890920ef7fd_2016-02-25-22-01-09_hand.csv
+# Nice object
+triangle_sampling/csv_gz_tri/bottle/a87fc2164d5bb73b9a6e43b878d5b335_2016-02-25-22-15-41_hand.csv
+# Nice object
+triangle_sampling/csv_gz_tri/bottle/aa868402ff149def8552149121505df9_2016-02-25-23-35-47_hand.csv
+triangle_sampling/csv_gz_tri/bottle/5ad47181a9026fc728cc22dce7529b69_2016-02-26-02-32-23_hand.csv
+# Middle part not captured at all, just like hammers problem with ellipsoid
+#   grid. Special shape, fat at bottom, like a flask.
+triangle_sampling/csv_gz_tri/bottle/81d289cf00a544f62d9fe390e23fd20f_2016-02-28-05-51-30_hand.csv
+# Sparse because used 30 ell_deg_step, in order to train everything in time
+triangle_sampling/csv_gz_tri/bottle/15787789482f045d8add95bf56d3d2fa_2016-02-28-14-13-54_hand.csv
+triangle_sampling/csv_gz_tri/bottle/437678d4bc6be981c8724d5673a063a6_2016-02-28-14-51-18_hand.csv
+triangle_sampling/csv_gz_tri/bottle/3f91158956ad7db0322747720d7d37e8_2016-02-29-00-31-52_hand.csv
+triangle_sampling/csv_gz_tri/bottle/20b7adb178ea2c71d8892a9c05c4aa0e_2016-02-29-01-05-24_hand.csv
+triangle_sampling/csv_gz_tri/bottle/490f3d001d230e6889f687b6e87e144f_2016-02-29-02-47-37_hand.csv
+triangle_sampling/csv_gz_tri/bottle/4b5f54fc4e629371cf078dc7b29022e6_2016-02-29-03-23-29_hand.csv
+
+triangle_sampling/csv_gz_tri/bottle/642092b63e83ac4dd01d3c0e394d0302_2016-03-15-15-51-45_hand.csv
+triangle_sampling/csv_gz_tri/bottle/6623907ab044311af4bdca145ed48dc6_2016-03-15-16-13-27_hand.csv
+triangle_sampling/csv_gz_tri/bottle/6b810dbc89542fd8a531220b48579115_2016-03-15-22-16-13_hand.csv
+triangle_sampling/csv_gz_tri/bottle/6ca2149ac6d3699130612f5c0ef21eb8_2016-03-16-13-57-08_hand.csv
+triangle_sampling/csv_gz_tri/bottle/736c26e42954ecfecab7ab7d91fa9137_2016-03-16-15-16-21_hand.csv
+triangle_sampling/csv_gz_tri/bottle/7467b9892496a83fbf8b9d530de7a108_2016-03-16-16-07-44_hand.csv
+triangle_sampling/csv_gz_tri/bottle/7984d4980d5b07bceba393d429f71de3_2016-03-16-17-08-18_hand.csv
+triangle_sampling/csv_gz_tri/bottle/799397068de1ae1c4587d6a85176d7a0_2016-03-16-17-52-34_hand.csv
+triangle_sampling/csv_gz_tri/bottle/8cd9b10f611ac28e866a1445c8fba9da_2016-03-16-19-17-06_hand.csv
+triangle_sampling/csv_gz_tri/bottle/908e85e13c6fbde0a1ca08763d503f0e_2016-03-16-20-31-39_hand.csv
+triangle_sampling/csv_gz_tri/bottle/970027a2c9f1de88c123147a914238ea_2016-03-16-21-05-15_hand.csv
+triangle_sampling/csv_gz_tri/bottle/9f2bb4a157164af19a7c9976093a710d_2016-03-17-14-41-41_hand.csv
+triangle_sampling/csv_gz_tri/bottle/a429f8eb0c3e6a1e6ea2d79f658bbae7_2016-03-17-15-37-57_hand.csv
+triangle_sampling/csv_gz_tri/bottle/af3dda1cfe61d0fc9403b0d0536a04af_2016-03-17-16-28-03_hand.csv
+# Special shape. Flat alcohol flask
+triangle_sampling/csv_gz_tri/bottle/b0652a09588f293c7e95755f464f6241_2016-03-17-17-23-16_hand.csv
+triangle_sampling/csv_gz_tri/bottle/bf7ecd80f7c419feca972daa503b3095_2016-03-17-18-58-16_hand.csv
+triangle_sampling/csv_gz_tri/bottle/c13219fac28e722edd6a2f6a8ecad52d_2016-03-17-19-43-43_hand.csv
+# Special shape. A sphere + a cylinder, like a chemical flask
+triangle_sampling/csv_gz_tri/bottle/c4729e522fd3d750def51fa1c8b9ff22_2016-03-17-20-18-53_hand.csv
+triangle_sampling/csv_gz_tri/bottle/c5e425b9b1f4f42b6d7d15cb5e1928e_2016-03-17-21-12-22_hand.csv
+triangle_sampling/csv_gz_tri/bottle/d44472ef7086538676bb31db0358e9c6_2016-03-17-22-13-58_hand.csv
+triangle_sampling/csv_gz_tri/bottle/d74bc917899133e080c257afea181fa2_2016-03-17-22-54-41_hand.csv
+triangle_sampling/csv_gz_tri/bottle/d9aee510fd5e8afb93fb5c975e8de2b7_2016-03-17-23-32-09_hand.csv
+triangle_sampling/csv_gz_tri/bottle/dc0926ce09d6ce78eb8e919b102c6c08_2016-03-18-15-45-14_hand.csv
+triangle_sampling/csv_gz_tri/bottle/dc687759ea93d1b72cd6cd3dc3fb5dc2_2016-03-18-16-43-56_hand.csv
+triangle_sampling/csv_gz_tri/bottle/defc45107217afb846564a8a219239b_2016-03-18-17-20-40_hand.csv
+triangle_sampling/csv_gz_tri/bottle/e6f95cfb9825c0f65070edcf21eb751c_2016-03-18-18-00-06_hand.csv
+triangle_sampling/csv_gz_tri/bottle/3dbd66422997d234b811ffed11682339_2016-03-18-19-12-51_hand.csv
+triangle_sampling/csv_gz_tri/bottle/e8b48d395d3d8744e53e6e0633163da8_2016-03-18-20-01-16_hand.csv
+triangle_sampling/csv_gz_tri/bottle/ee74f5bfb0d7c8a5bd288303be3d57e7_2016-03-18-21-15-15_hand.csv
+triangle_sampling/csv_gz_tri/bottle/fa44223c6f785c60e71da2487cb2ee5b_2016-03-18-21-56-26_hand.csv
+triangle_sampling/csv_gz_tri/bottle/milkbottle_2016-03-18-23-41-26_hand.csv
+
+
+######## Bowl ##
+
+# bowl 429a622eac559887bbe43d356df0e955
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/bowl/429a622eac559887bbe43d356df0e955.csv
+# 2 ps, 2 rot, 30 ell_deg_step, accum 2 pos, PALM_THICKNESS 0.1, horiz rings
+triangle_sampling/csv_gz_tri/bowl/429a622eac559887bbe43d356df0e955_2016-02-19-02-50-51_hand.csv
+
+#bowl 63787d5ff22ef52a2eb33053525e23a0
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/bowl/63787d5ff22ef52a2eb33053525e23a0_insideRemoved.csv
+# 2 ps, 2 rot, 25 ell_deg_step, accum 2 pos, PALM_THICKNESS 0.1, horiz rings
+triangle_sampling/csv_gz_tri/bowl/63787d5ff22ef52a2eb33053525e23a0_2016-02-19-13-10-20_hand.csv
+
+triangle_sampling/csv_gz_tri/bowl/68582543c4c6d0bccfdfe3f21f42a111_2016-02-22-01-43-24_hand.csv
+triangle_sampling/csv_gz_tri/bowl/c25fd49b75c12ef86bbb74f0f607cdd_2016-02-22-20-46-04_hand.csv
+triangle_sampling/csv_gz_tri/bowl/c2882316451828fd7945873d861da519_2016-02-24-03-42-22_hand.csv
+triangle_sampling/csv_gz_tri/bowl/cfac22c8ca3339b83ce5cb00b21d9584_2016-02-26-07-19-09_hand.csv
+triangle_sampling/csv_gz_tri/bowl/dbc35fcbbb90b5b4a7eee628cf5fc3f7_2016-02-29-03-49-12_hand.csv
+triangle_sampling/csv_gz_tri/bowl/f2cb15fb793e7fa244057c222118625_2016-02-29-04-16-54_hand.csv
+triangle_sampling/csv_gz_tri/bowl/960c5c5bff2d3a4bbced73c51e99f8b2_2016-02-29-04-46-20_hand.csv
+triangle_sampling/csv_gz_tri/bowl/6a772d12b98ab61dc26651d9d35b77ca_2016-02-29-05-41-40_hand.csv
+triangle_sampling/csv_gz_tri/bowl/899af991203577f019790c8746d79a6f_2016-02-29-06-10-45_hand.csv
+triangle_sampling/csv_gz_tri/bowl/aeb7b4bb33fd43a14e23e9314af9ae57_2016-02-29-06-35-00_hand.csv
+triangle_sampling/csv_gz_tri/bowl/7c43116dbe35797aea5000d9d3be7992_2016-02-29-06-59-27_hand.csv
+triangle_sampling/csv_gz_tri/bowl/9a52843cc89cd208362be90aaa182ec6_2016-02-29-07-31-23_hand.csv
+triangle_sampling/csv_gz_tri/bowl/6930c4d2e7e880b2e20e92c5b8147e4a_2016-02-29-07-42-46_hand.csv
+triangle_sampling/csv_gz_tri/bowl/f44387d8cb8d2e4ebaedc225f2279ecf_2016-02-29-08-24-35_hand.csv
+triangle_sampling/csv_gz_tri/bowl/f74bba9a22e044dea3769fcd5f96f4_2016-02-29-08-50-40_hand.csv
+triangle_sampling/csv_gz_tri/bowl/fa23aa60ec51c8e4c40fe5637f0a27e1_2016-02-29-09-19-31_hand.csv
+triangle_sampling/csv_gz_tri/bowl/e3e57a94be495771f54e1b6f41fdd78a_2016-02-29-10-12-52_hand.csv
+triangle_sampling/csv_gz_tri/bowl/dd381b3459767f7b18f18cdcd25d1bbb_2016-02-29-09-38-32_hand.csv
+triangle_sampling/csv_gz_tri/bowl/4845731dbf7522b07492cbf7d8bec255_2016-02-29-10-54-43_hand.csv
+
+
+######## Donut ##
+
+# Donut 3dea4c82af8128b7d2fa1900b66a6748
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/donut/3dea4c82af8128b7d2fa1900b66a6748_insideRemoved.csv
+triangle_sampling/csv_gz_tri/donut/3dea4c82af8128b7d2fa1900b66a6748_2016-02-19-21-17-50_hand.csv
+
+triangle_sampling/csv_gz_tri/donut/5c848a830ec567bb9220647403cfb896_2016-02-21-02-11-09_hand.csv
+triangle_sampling/csv_gz_tri/donut/745a7f01e0c968d142a2f1301def0553_2016-02-22-02-04-31_hand.csv
+triangle_sampling/csv_gz_tri/donut/7cde0fe08897826bc8635ea1c31dd83b_2016-02-22-14-08-09_hand.csv
+triangle_sampling/csv_gz_tri/donut/9b1df56fced578bf22139ddabca1e534_2016-02-22-15-24-33_hand.csv
+triangle_sampling/csv_gz_tri/donut/bef8e5a3415509f8776019fae91e4bb6_2016-02-26-15-44-03_hand.csv
+triangle_sampling/csv_gz_tri/donut/d3e72efaaf368f01b9a3aabe35ae3de8_2016-02-26-16-47-03_hand.csv
+triangle_sampling/csv_gz_tri/donut/da7e2f8889477adfbf02965a2f2d8a1c_2016-02-26-16-54-14_hand.csv
+# Best donut I've seen, hole is big and obvious
+triangle_sampling/csv_gz_tri/donut/ed681f249d55c96b269799778c76b9b6_2016-02-27-11-33-54_hand.csv
+# Clear hole
+triangle_sampling/csv_gz_tri/donut/fa7ccf7a6d68e301e740ff324a0152f_2016-02-27-12-19-25_hand.csv
+
+
+######## Hammer ##
+
+# Archive3D
+
+triangle_sampling/csv_gz_tri/hammer/hammer_19311807_2016-02-21-16-10-01_hand.csv
+triangle_sampling/csv_gz_tri/hammer/hammer_51766405_2016-02-24-15-22-02_hand.csv
+
+
+# 3DNet
+
+# Hammer 145157efc0f61fefd728ddcff7de3976
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/hammer/145157efc0f61fefd728ddcff7de3976_insideRemoved.csv
+# 2 ps, 2 rot, 20 ell_deg_step, accum 2 pos, PALM_THICKNESS 0.1, horiz rings
+triangle_sampling/csv_gz_tri/hammer/145157efc0f61fefd728ddcff7de3976_2016-02-19-16-24-13_hand.csv
+
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/hammer/94dbb6874c576ee428bcb63ced82086c_insideRemoved.csv
+# 20 deg_step
+triangle_sampling/csv_gz_tri/hammer/94dbb6874c576ee428bcb63ced82086c_2016-02-20-23-21-41_hand.csv
+
+triangle_sampling/csv_gz_tri/hammer/3127072499ce5d2a7536da783d466469_2016-02-23-00-03-22_hand.csv
+triangle_sampling/csv_gz_tri/hammer/31340e691294a750d30ee0b5a9888c0b_2016-02-23-01-23-26_hand.csv
+triangle_sampling/csv_gz_tri/hammer/6479d3b11a3fc2712e718102b5cac3de_2016-02-25-03-51-32_hand.csv
+triangle_sampling/csv_gz_tri/hammer/6ed8841f75fe0b87eb5d382c7eb13b28_2016-02-26-03-31-10_hand.csv
+triangle_sampling/csv_gz_tri/hammer/a49a6c15dcef467bc84c00e08b1e25d7_2016-02-26-04-43-59_hand.csv
+triangle_sampling/csv_gz_tri/hammer/b93077d288b5f7e25f248f0088614e84_2016-02-26-05-28-14_hand.csv
+# Terrible, only 301 pts in PCD, not many contacts at all, doesn't even look
+#   like hammer. 2669 tris.
+triangle_sampling/csv_gz_tri/hammer/d05b3552a37c1a8dac87f3f2c3d951e1_2016-02-26-22-01-22_hand.csv
+# Only 1000 triangles... Ridiculous. PCD sparse too.
+triangle_sampling/csv_gz_tri/hammer/b5dffdfe095e0164e3d7746581537bbd_2016-02-26-22-39-20_hand.csv
+# Pretty sparse, but better than 2 above
+triangle_sampling/csv_gz_tri/hammer/abb61e6edd2f642238eeb65ddb108127_2016-02-27-00-07-53_hand.csv
+triangle_sampling/csv_gz_tri/hammer/7166018ae7d3d476da41f10b0ef30337_2016-02-27-00-50-04_hand.csv
+triangle_sampling/csv_gz_tri/hammer/405f308492a6f40d2c3380317c2cc450_2016-02-27-01-45-05_hand.csv
+# 268 pts, fewest I've ever seen, but PCD looks pretty good
+triangle_sampling/csv_gz_tri/hammer/679eb39be4dc5a6b96fb05a111f3e4e2_2016-02-27-02-38-18_hand.csv
+triangle_sampling/csv_gz_tri/hammer/80437c99ed1a89bde2b5e992d8e5b58f_2016-02-27-03-14-03_hand.csv
+triangle_sampling/csv_gz_tri/hammer/cf89f083e6c5c1b2ca003415697caf47_2016-02-27-04-08-40_hand.csv
+# PCD is terrible, just a stick. It could be anything
+triangle_sampling/csv_gz_tri/hammer/d7bc086938d0bbcb52db7be3d11b79eb_2016-02-27-04-41-41_hand.csv
+# Best hammer I've seen all day
+triangle_sampling/csv_gz_tri/hammer/rubber_mallet_2016-02-27-05-15-57_hand.csv
+# Good hammer
+triangle_sampling/csv_gz_tri/hammer/sledge_hammer_2016-02-27-06-05-18_hand.csv
+# Good hammer
+triangle_sampling/csv_gz_tri/hammer/25f6f2002f9287ff6c142f9dd7073357_2016-02-27-06-51-05_hand.csv
+# Good hammer
+triangle_sampling/csv_gz_tri/hammer/2ab79d65b1548b71f6551c09bbd2527b_2016-02-27-07-51-23_hand.csv
+# PCD looks okay, but hammer is very thin, so few points.
+triangle_sampling/csv_gz_tri/hammer/3c80c41399d2c92334fb047a3245866d_2016-02-27-08-39-38_hand.csv
+# PCD looks so so
+triangle_sampling/csv_gz_tri/hammer/4ab83d02535be5de6b61e0a518a188f0_2016-02-27-09-21-26_hand.csv
+# PCD looks normal, hammer shape but only 349 pts
+triangle_sampling/csv_gz_tri/hammer/6683cadf1d45d69a3a3cbcf1ae739c36_2016-02-27-10-14-33_hand.csv
+# One of the worst, 261 pts in PCD, looks like could be anything
+triangle_sampling/csv_gz_tri/hammer/137070923aa6072f5f32631994d295f4_2016-02-27-23-29-44_hand.csv
+triangle_sampling/csv_gz_tri/hammer/c4356dee81f725fd4e658c3e3c1d541_2016-02-28-11-31-34_hand.csv
+
+
+######## Mugs ##
+
+# Mug 40f9a6cc6b2c3b3a78060a3a3a55e18f
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/mug/542235fc88d22e1e3406473757712946.csv
+# 2 ps, 2 rot, 20 ell_deg_step, accum 2 pos, PALM_THICKNESS 0.1, horiz rings
+triangle_sampling/csv_gz_tri/mug/542235fc88d22e1e3406473757712946_2016-02-19-19-14-00_hand.csv
+
+triangle_sampling/csv_gz_tri/mug/6aec84952a5ffcf33f60d03e1cb068dc_2016-02-21-00-09-55_hand.csv
+triangle_sampling/csv_gz_tri/mug/6faf1f04bde838e477f883dde7397db2_2016-02-21-18-14-00_hand.csv
+triangle_sampling/csv_gz_tri/mug/896f1d494bac0ebcdec712af445786fe_2016-02-22-17-21-24_hand.csv
+triangle_sampling/csv_gz_tri/mug/a35a92dcc481a994e45e693d882ad8f_2016-02-22-17-49-26_hand.csv
+triangle_sampling/csv_gz_tri/mug/c86c80818239a7d8cfdfe3f21f42a111_2016-02-24-17-04-53_hand.csv
+triangle_sampling/csv_gz_tri/mug/cf777e14ca2c7a19b4aad3cc5ce7ee8_2016-02-24-18-32-06_hand.csv
+triangle_sampling/csv_gz_tri/mug/d38295b8d83e8cdec712af445786fe_2016-02-24-19-38-25_hand.csv
+triangle_sampling/csv_gz_tri/mug/6c379385bf0a23ffdec712af445786fe_2016-02-24-20-51-50_hand.csv
+triangle_sampling/csv_gz_tri/mug/1c9f9e25c654cbca3c71bf3f4dd78475_2016-02-24-21-11-07_hand.csv
+triangle_sampling/csv_gz_tri/mug/37f56901a07da69dac6b8e58caf61f95_2016-02-24-22-47-46_hand.csv
+# Handle not as clear as some others in side view
+triangle_sampling/csv_gz_tri/mug/48e260a614c0fd4434a8988fdcee4fde_2016-02-28-00-17-29_hand.csv
+triangle_sampling/csv_gz_tri/mug/4f9f31db3c3873692a6f53dd95fd4468_2016-02-28-00-50-40_hand.csv
+triangle_sampling/csv_gz_tri/mug/6a9b31e1298ca1109c515ccf0f61e75f_2016-02-28-01-15-52_hand.csv
+# Noisest I've ever seen. Lots vibrations
+triangle_sampling/csv_gz_tri/mug/2997f21fa426e18a6ab1a25d0e8f3590_2016-02-28-02-31-02_hand.csv
+triangle_sampling/csv_gz_tri/mug/59c2a9f6e97ebde9266e6525b6754758_2016-02-28-03-17-04_hand.csv
+# Super nice object, didn't even break hand much, didn't need a restart
+triangle_sampling/csv_gz_tri/mug/99eaa69cf6fe8811dec712af445786fe_2016-02-28-03-21-06_hand.csv
+# PCD has clear handle but lots noise on wall
+triangle_sampling/csv_gz_tri/mug/a637500654ca8d16c97cfc3e8a6b1d16_2016-02-28-05-04-15_hand.csv
+triangle_sampling/csv_gz_tri/mug/71995893d717598c9de7b195ccfa970_2016-02-28-05-30-46_hand.csv
+triangle_sampling/csv_gz_tri/mug/b88bcf33f25c6cb15b4f129f868dedb_2016-02-28-06-38-43_hand.csv
+# Noisest. Can't tell where's handle where's mug. A jumbo mess.
+triangle_sampling/csv_gz_tri/mug/c39fb75015184c2a0c7f097b1a1f7a5_2016-02-28-08-16-52_hand.csv
+triangle_sampling/csv_gz_tri/mug/b9c5e403c471e86343e2a554546956a2_2016-02-28-07-38-51_hand.csv
+# Noise on sampling wall. Mid to low quality
+triangle_sampling/csv_gz_tri/mug/c6bc2c9770a59b5ddd195661813efe58_2016-02-28-09-01-19_hand.csv
+triangle_sampling/csv_gz_tri/mug/d75af64aa166c24eacbe2257d0988c9c_2016-02-28-09-06-16_hand.csv
+triangle_sampling/csv_gz_tri/mug/dcec634f18e12427c2c72e575af174cd_2016-02-28-10-03-24_hand.csv
+triangle_sampling/csv_gz_tri/mug/f394a2f4d4593b068b44b9dceab64d65_2016-02-28-10-22-43_hand.csv
+triangle_sampling/csv_gz_tri/mug/fad118b32085f3f2c2c72e575af174cd_2016-02-28-10-57-36_hand.csv
+triangle_sampling/csv_gz_tri/mug/bea77759a3e5f9037ae0031c221d81a4_2016-02-28-12-11-42_hand.csv
+triangle_sampling/csv_gz_tri/mug/bed29baf625ce9145b68309557f3a78c_2016-02-28-12-33-12_hand.csv
+triangle_sampling/csv_gz_tri/mug/f09e51579600cfbb88b651d2e4ea0846_2016-02-28-12-50-01_hand.csv
+triangle_sampling/csv_gz_tri/mug/162201dfe14b73f0281365259d1cf342_2016-02-28-13-41-39_hand.csv
+triangle_sampling/csv_gz_tri/mug/40f9a6cc6b2c3b3a78060a3a3a55e18f_2016-02-28-14-41-25_hand.csv
+
+
+######## Toilet paper ##
+
+# Toilet paper c34a1187b6842c97f677220a1c9508e3
+# PCL
+#triangle_sampling/csv_tri/nSamples10_ratio095/toilet_paper/c34a1187b6842c97f677220a1c9508e3.csv
+triangle_sampling/csv_gz_tri/toilet_paper/c34a1187b6842c97f677220a1c9508e3_2016-02-19-22-16-08_hand.csv
+
+triangle_sampling/csv_gz_tri/toilet_paper/ed56f9170240b28d7ed7d8a18524ec34_2016-02-21-03-49-22_hand.csv
+triangle_sampling/csv_gz_tri/toilet_paper/tlt_paper_2016-02-21-22-59-53_hand.csv
+triangle_sampling/csv_gz_tri/toilet_paper/tlt_paper_sm_2016-02-24-01-43-42_hand.csv
+triangle_sampling/csv_gz_tri/toilet_paper/tlt_ppr_roundcorner_2016-02-24-02-29-44_hand.csv
+triangle_sampling/csv_gz_tri/toilet_paper/tlt_paper_sm_sm_2016-02-24-03-10-30_hand.csv
+# Good pcd
+triangle_sampling/csv_gz_tri/toilet_paper/3585a9ea9a1c40d5533775ea6714a372_2016-02-27-20-40-18_hand.csv
+triangle_sampling/csv_gz_tri/toilet_paper/wc_paper_2016-02-29-10-34-17_hand.csv
+triangle_sampling/csv_gz_tri/toilet_paper/da6e2afe4689d66170acfa4e32a0a86_2016-02-29-11-35-00_hand.csv
+

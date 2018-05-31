@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     10 Nov 2015
+
+     Launches sample_gazebo.py and its dependencies
+  -->
+
+<launch>
+  <!-- Specify cyl_grid or ell_grid -->
+  <arg name="sample_grid" default="ell_grid" />
+
+  <arg name="pickup" default="false" />
+  <arg name="pickup_from_file" default="dummy" /> <!-- ex. 2016-02-10-00-05-44 -->
+  <arg name="pickup_z" default="0" />
+  <arg name="pickup_theta" default="0" />
+  <arg name="pickup_ell_idx" default="0" />
+
+
+  <!-- Publishes my custom contacts msgs, used by triangles_collect.py to
+    record PCD and triangles data.
+    Set respawn to true so sample_gazebo.py can kill this node when reloading
+    the hand, and here we respawn one to connect with new hand.-->
+  <node pkg="tactile_map" type="detect_reflex_contacts.py"
+    name="detect_reflex_contacts" output="screen" respawn="true" />
+
+  <!-- Broadcaster for /base to /base_link, needed for recording PCD wrt a
+    fixed frame. -->
+  <node pkg="util" type="tf_broadcaster.py" name="tf_broadcaster_hand"
+    output="screen" respawn="false">
+    <!-- sample_gazebo.py publishes topic in the to field.
+      Ref: http://wiki.ros.org/roslaunch/XML/remap -->
+    <remap from="/tf_broadcaster/transform" to="/tf_broadcaster/transform_hand" />
+  </node>
+
+  <!-- Broadcaster for /base_link to /left_gripper, needed for slightly
+     modifying hand pose to be closer to object. -->
+  <node pkg="util" type="tf_broadcaster.py" name="tf_broadcaster_wrist"
+    output="screen" respawn="false">
+    <!-- sample_gazebo.py publishes topic in the to field.
+      Ref: http://wiki.ros.org/roslaunch/XML/remap -->
+    <remap from="/tf_broadcaster/transform" to="/tf_broadcaster/transform_wrist" />
+  </node>
+
+
+  <!-- Main sampling script -->
+  <group if="$(arg pickup)">
+    <node pkg="triangle_sampling" type="sample_gazebo.py" name="sample_gazebo"
+      output="screen" respawn="false" args="--$(arg sample_grid) --pickup_from_file $(arg pickup_from_file) --pickup_z $(arg pickup_z) --pickup_theta $(arg pickup_theta) --pickup_ell_idx $(arg pickup_ell_idx)" />
+  </group>
+  <group unless="$(arg pickup)">
+    <node pkg="triangle_sampling" type="sample_gazebo.py" name="sample_gazebo"
+      output="screen" respawn="false" args="--$(arg sample_grid)" />
+  </group>
+
+</launch>
+

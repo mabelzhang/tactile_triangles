@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Copied from real_ticks.txt
+
+# For collected data:
+#   Base name is read by triangles_reader.py
+#   Directory names are fake, just for making category tick labels in plots.
+#     Directory (category name) and base name are read by triangles_nn.py
+# This is for real-robot data, the triangles without historic data. So these
+#   don't have a real pcd file. Just use a dummy path.
+#   (The PCD file collected does not have a _suffix. That's how you
+#   distinguish btw the triangle-only and the pcd file.)
+
+
+# 2015-09-12, semi-auto
+# Object 2: metal mug with big handle. 776 triangles
+mug_steel/2015-09-12-21-02-52_robo_combo.csv
+# Object 1: straight symmetric plastic transparent bottle with 5 segments
+#   825 triangles
+round_bottle/2015-09-12-18-56-46_robo_combo.csv
+# Object 3: green spraybottle. 2182 triangles
+spray_bottle/2015-09-12-21-51-15_robo_combo.csv
+# Object 4: Rubber mallot, yellow and red, standing upside down. 1361 triangles
+hammer/2015-09-12-23-41-34_robo_combo.csv

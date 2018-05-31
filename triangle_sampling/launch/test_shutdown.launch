@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!-- Mabel Zhang
+     28 Aug 2016 -->
+
+<launch>
+
+  <node pkg="triangle_sampling" type="test_shutdown.py"
+    name="test_shutdown" output="screen" respawn="false" />
+
+</launch>
+
