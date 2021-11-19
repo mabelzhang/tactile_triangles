@@ -1,0 +1,556 @@
+Mabel Zhang
+11 Aug 2015
+
+triangle_sampling package
+Triangle histogram descriptor for object classification
+
+
+========
+Running this package
+
+========
+
+See header comments in each file.
+
+
+Input files:
+
+config/models.txt
+  sample_pcl.cpp reads this
+
+
+Output files (generated depending on dataset, not provided):
+  Triangles files
+  Histogram files
+  Files that required Blender and PCL point-cloud-sampling-from-mesh
+
+
+Entry-point files:
+
+(sample_pt_cloud.py
+  No longer used, because sampling in this script is random, not realistic for
+    robotic hand.
+  This was the first OBJ sampling script I ever wrote in this package. It was 
+    an initial script to establish the framework for sampling.
+
+  The current official sampler for OBJ files, sample_pcl.cpp, was started
+    based on this script (but no longer similar, the cpp file added a lot of
+    things).
+
+  Calls plot_hist_dd.py to plot histograms in matplotlib.
+)
+
+
+sample_pcl.cpp
+  Input:
+  Reads config/models.txt file to load .pcd files, and performs triangle
+    sampling from my custom sphere, using PCL to divide the PCD cloud into
+    cubic voxels.
+
+  Output:
+  Visualizes the sampling steps in RViz (if doRViz flag = true).
+  Publishes ROS msgs of TriangleParams type. (Python node subscribes to this.)
+
+  $ rosrun triangle_sampling sample_pcl
+
+  Or with custom sampling density parameters:
+  Sampling per pass per voxel uses the minimum of these two numbers. When there
+    is not enough, as many as possible will still be sampled (until n choose 3
+    is reached, the exhaustive number of triangles that can be sampled in a
+    sampling sphere).
+  $ rosrun triangle_sampling sample_pcl --nSamples 100 -nSamplesRatio 0.95
+   
+
+(sample_pcl_plotter.py
+  I do not use this one much anymore, just use
+    sample_pcl_calc_hist.py below.
+
+  Input:
+  ROS msgs TriangleParams published by sample_pcl.cpp
+
+  Output:
+  Plots the 3D histograms, in flattened 1D plots, arranged in n x n confusion
+    matrix style for n objects. Plotting done using matplotlib.
+    Do not use more than 4 objects for plotting.
+  Saves the plots to .eps files.
+)
+
+sample_pcl_calc_hist.py
+  Input:
+  ROS msgs TriangleParams published by sample_pcl.cpp
+
+  Output:
+  Plots histogram intersections using matplotlib (if flag is enabled).
+    Also plots histogram minus histogram intersection, as it is easier to see.
+    Do not use more than 4 objects in models.txt for plotting.
+    If you run more than 4 objects, set plot flag to False.
+  Saves the plots to .eps files.
+  Saves the 3D histograms as a 1D row vector to .csv files, one file per
+    object.
+
+
+echo_model_paths.sh
+  Generates models.txt that combines 3dnet and archive3d .pcd file paths.
+
+  Usage for 3DNet dataset (on MacBook Air):
+    $ cd ~/graspingRepo/train/3DNet/cat10/train/pcd
+    $ echo_model_paths . ../../../../../reFlexHand/catkin_ws/src/triangle_sampling/config/models_3dnet.txt --new
+
+  Usage for combined dataset, of archive3D and 3DNet:
+    $ cd /Users/master/graspingRepo/train
+
+    Get all the paths for archive3D:
+    $ echo_model_paths triangle_sampling/models/3Dmodels/ models_tmp.txt --new
+
+    Get all the paths for 3DNet:
+    $ echo_model_paths 3DNet/cat10/train/pcd/ models_tmp.txt
+
+    Move to config dir:
+    $ mv models.txt ~/graspingRepo/reFlexHand/catkin_ws/src/triangle_sampling/config/models_tmp.txt
+
+
+convert_hists_to_train.py
+Not using anymore
+
+
+triangles_svm.py
+triangles_nn.py
+
+  $ rosrun triangle_sampling triangles_svm.py 0 0 --gazebo --rand_splits --meta models_active_test.txt
+
+
+
+
+
+
+========
+To save 3D histograms, using existing triangle (csv_tri/) or triangle list
+  (csv_tri_lists/) CSV files as input.
+
+========
+
+triangles_reader.py
+
+  Read existing triangle or triangle list files, output 3D histograms.
+
+  Run with --real or --pcd flag, dependin on your triangles input.
+  --real: For data collected on real robot, saved from triangles_collect.py.
+  --pcd:  For synthetic 3D point cloud data, saved from 
+            sample_pcl.cpp and sample_pcl_calc_hist.py.
+  --gazebo: For synthetic 3D mesh model data sampled in Gazebo, saved from
+              sample_gazebo.py.
+
+  See the two files below for details.
+
+  $ rosrun triangle_sampling triangles_reader.py --pcd
+  This calls triangles_lists_synthetic_publisher.py.
+
+  $ rosrun triangle_sampling triangles_reader.py --real
+  This calls triangles_on_robot_to_hists.py.
+
+  $ rosrun triangle_sampling triangles_reader.py --gazebo 0 0
+  This calls triangles_on_robot_to_hists.py.
+
+
+triangles_lists_synthetic_publisher.py
+
+  This is a substitute for sample_pcl.cpp, when you've already run
+    sample_pcl.cpp, and just wish to reuse all the triangles, without 
+    redoing the sampling in the C++ node (which can take many minutes depending
+    on sampling frequency).
+  It is a convenient way of reusing the triangles to run experimens while
+    varying histogram bin size, etc.
+  Precondition:
+    You set saveRaw = True in sample_pcl_calc_hist.py, the first
+      time you ran sample_pcl.cpp.
+    (Otherwise the raw triangles would not have been saved!)
+    If you are unsure, then you should run sample_pcl.cpp again, with this
+      flag on, just to make sure you are running on the latest triangles, not
+      some outdated ones!
+
+  Don't run this directly, as it has no main().
+  Run this file using:
+  $ rosrun triangle_sampling triangles_reader.py --pcd
+
+  For it to do anything, also run this in parallel:
+  $ rosrun triangle_sampling sample_pcl_calc_hist.py
+
+  Reads triangle list files in csv_tri_lists saved from
+    sample_pcl_calc_hist.py. Publishes them as TriangleParams
+    type message, just like how sample_pcl.cpp would.
+
+    Exception: Since only 3 chosen params are saved to csv_tri_lists files, not
+    all 6, this node will only fill in 3 of the 6 params in a TriangleParams
+    message. This behavior is different from sample_pcl.cpp, which fills
+    in all 6.
+
+
+triangles_on_robot_to_hists.py
+
+  Don't run this directly, as it has no main().
+  Run this file using:
+  $ rosrun triangle_sampling triangles_reader.py --real
+
+  Reads triangle files in csv_tri saved from triangles_collect.py in
+    tactile_collect package. These triangles are collected on real robot.
+  Calculates and saves 3D histogram to file, the same way as
+    sample_pcl_calc_hist.py does for synthetic data.
+
+    These histograms use the bin range configs in hist_conf.csv, saved from
+    synthetic data by sample_pcl_calc_hist.py.
+
+    In other words, these histograms can be used as test data. Their bins will
+    correspond with the ones in synthetic training data.
+
+
+
+========
+To sample all objects in models.txt and run SVM (with cross validation) on the
+  resulting histograms:
+
+========
+
+1 Sep 2015
+
+SVM:
+
+Run this first, wait for it to finish initializing:
+$ rosrun triangle_sampling sample_pcl_calc_hist.py 
+
+Run this in a second window, after above script finishes initializing:
+$ rosrun triangle_sampling sample_pcl --nSamples 300 --sampleRatio 0.95
+
+  If you want to reuse the triangles obtained from a previous sampling (i.e.
+    a previous run of sample_pcl.cpp),
+
+    provided that you saved the raw triangle lists by setting saveRaw flag
+    to True in sample_pcl_calc_hist.py,
+
+    then you can simply run this, without redoing the same sampling with
+    sample_pcl.cpp:
+
+  $ rosrun triangle_sampling triangles_reader.py --pcd
+
+After above two are done, run this:
+$ rosrun tactile_collect triangles_svm.sh
+
+
+
+========
+To manually move robot and sample real object:
+
+========
+
+26 Aug 2015
+
+triangles_collect.py:
+
+This file is for running on real robot, collect tactile point cloud and/or
+  triangles on objects.
+
+1. Start Baxter+ReFlex combo:
+roslaunch baxter_reflex baxter_reflex.launch
+
+2. Start Baxter keyboard control, so I can move the arms by keyboard
+  (look at my colorcoded keyboard sheet, and printout of Baxter's 7 joints,
+  marked with keys):
+rosrun baxter_reflex joint_position_keyboard.py
+
+3. Start contact detector for ReFlex sensors. This also visualizes in RViz:
+rosrun tactile_map detect_reflex_contacts.py
+
+4. Start code for data collection (main piece of code):
+rosrun tactile_collect triangles_collect.py
+
+5. Start keyboard interface to talk to the collection code:
+rosrun tactile_map keyboard_interface.py
+
+6. Visualize (optional):
+rosrun rviz rviz
+
+After collection, use this to check the collected file:
+pcd_viewer file.pcd
+
+
+Help message of baxter_examples joint_position_keyboard.py:
+
+Controlling joints. Press ? for help, Esc to quit.
+key bindings: 
+  Esc: Quit
+  ?: Help
+
+  /: left: gripper calibrate
+  ,: left: gripper close
+  m: left: gripper open
+
+  y: left_e0 decrease
+  o: left_e0 increase
+  u: left_e1 decrease
+  i: left_e1 increase
+  6: left_s0 decrease
+  9: left_s0 increase
+  7: left_s1 decrease
+  8: left_s1 increase
+  h: left_w0 decrease
+  l: left_w0 increase
+  j: left_w1 decrease
+  k: left_w1 increase
+  n: left_w2 decrease
+  .: left_w2 increase
+
+  b: right: gripper calibrate
+  c: right: gripper close
+  x: right: gripper open
+  q: right_e0 decrease
+  r: right_e0 increase
+  w: right_e1 decrease
+  e: right_e1 increase
+  1: right_s0 decrease
+  4: right_s0 increase
+  2: right_s1 decrease
+  3: right_s1 increase
+  a: right_w0 decrease
+  f: right_w0 increase
+  s: right_w1 decrease
+  d: right_w1 increase
+  z: right_w2 decrease
+  v: right_w2 increase
+
+
+If the step of movement is too large, modify the script to make movement
+  steps more refined.
+
+
+
+========
+To semi-automatically move robot and sample real object:
+
+========
+
+7 Sep 2015
+
+triangles_collect.py:
+
+This file is for running on real robot, collect tactile point cloud and/or
+  triangles on objects.
+
+1. Start Baxter+ReFlex combo:
+roslaunch baxter_reflex baxter_reflex.launch
+
+2. Start contact detector for ReFlex sensors. This also visualizes in RViz:
+rosrun tactile_map detect_reflex_contacts.py
+
+3. Start code for data collection (main piece of code):
+Gauge radius and height of object first:
+rosrun tactile_collect triangles_collect_semiauto.py --gauge
+Once gauged, pass in the radius as -r, height as -z.
+  If sample ceiling, pass in 1 0.
+  If sample wall, pass in 0 1:
+For white mug with water in walls:
+Ceiling:
+$ rosrun triangle_sampling triangles_collect_semiauto.py --robot_on --reflex_on -r 0.04 -z 0.2 1 0
+Wall (start 30 degs, duration 30 degs):
+$ rosrun triangle_sampling triangles_collect_semiauto.py --robot_on --reflex_on -r 0.04 -z 0.2 0 1
+
+4. Start keyboard interface to talk to the collection code:
+rosrun tactile_map keyboard_interface.py
+
+5. Visualize (optional):
+rosrun rviz rviz
+Turn on TF for /base and /left_gripper frames (do NOT turn on /base_link, it
+  will confuse you! IK goals are for /left_gripper frame ONLY, by Baxter IK
+  API).
+
+After collection, use this to check the collected file:
+pcd_viewer file.pcd
+
+
+
+Objects' radii and heights:
+
+See triangles_collect_semiauto.txt log file.
+
+
+
+========
+To compute descriptors and run classification on semi-autonomously collected
+  objects:
+
+========
+
+1. Inspect .pcd files for seeing what data you collected:
+
+You can inspect these using pcd_viewer (pcl 1.6 and prior) or pcl_viewer (1.7):
+$ pcl_viewer file1.pcd file2.pcd file3.pcd
+This will display all listed files in one view.
++ to increase point size
+l to see all available color handles, 1 to 7 to switch rainbow colors
+g to display grid
+
+
+2. Prepare .csv triangle files for descriptors:
+
+If you collected an object by multiple runs of triangles_collect_semiauto.txt,
+  you'll need to concatenate all the triangle files for that object into one:
+$ cat file1 file2 file3 > file_combo.csv
+
+There will be extra column titles in the middle of the combined file, from
+  the later csv files. Remove the extra headers manually in file_combo.csv.
+
+
+3. Prepare config/models_and_real.txt meta file:
+
+Add the names of the concatenated triangle csv files to end of this file.
+
+Prepend a fake directory name, specifying the class name of each file, like
+  mug, tool, etc. These class names should be from the synthetic classes, to
+  test your real objects on the synthetic categories.
+
+
+4. Generate hist_conf.csv in csv_bx_hists:
+
+  $ rosrun triangle_sampling hist_conf_writer.py 0 0 --real --no_prune --nbins 10,10,10 --prs l0,l1,a0 --meta real.txt --long_csv_path 
+
+
+5. Compute histogram descriptors:
+
+Since now I have sampling-density-specific sub folders, you'll need to move
+  these files to whatever density you want to run classification on...
+You should put them with a sampling density that's representative of on-robot
+  collection, like nSamples 10 nSamplesRatio 0.95, which have a median number
+  of triangles 600, comparable to real robot.
+
+Run this to load the triangles, compute histograms and KDE, and save to file:
+  $ rosrun triangle_sampling triangles_reader.py --real l0,l1,a0 10,10,10
+
+
+6. Run classification:
+
+Change the first two numbers, if you didn't use these nSamples and
+  nSamplesRatio configs:
+
+$ rosrun triangle_sampling triangles_nn.py 10 0.95 --meta models_and_real.txt
+$ rosrun triangle_sampling triangles_svm.py 10 0.95 --meta models_and_real.txt
+
+
+
+Debug runs
+
+1. To test KDE on a few real objects in real.txt:
+
+To save the 2D slice 3D histograms, specify --realtest:
+$ rosrun triangle_sampling triangles_reader.py --realtest 10 0.95
+
+
+2. To plot exhaustive confusion matrix with fake class names in the ticks.
+You can edit the fake class names in real_ticks.txt. These are to help
+  see which row is exactly what object.
+
+$ rosrun triangle_sampling triangles_nn.py 10 0.95 --meta real_ticks.txt --real --exhaustive --exhaustive_ticks --truetype
+
+
+
+
+
+========
+KDE (kernel density estimation) histogram smoothing
+========
+
+Run these to debug KDE on a few test objects in models_test.txt:
+In triangles_reader.py, change models.txt to models_test.txt (or use --pcdtest
+  argument).
+In write_hist_3d.py, set DEBUG_PLOTS = True.
+In sample_pcl_calc_hist.py, set
+  decimeter=True,
+  testKDE=True
+  save1D=False,
+  save3D=False (so your histogram hist_conf.csv data doesn't get overwritten
+  by runs on just a few objects, which would be wrong!)
+  (or use --kdetest argument, for the save3D=False, saveKDE=Fase, testKDE=True, DEBUG_PLOTS=True)
+$ rosrun triangle_sampling sample_pcl_calc_hist.py --kdetest --nSamples 10 --nSamplesRatio 0.95
+$ rosrun triangle_sampling triangles_reader.py --pcdtest 10 0.95
+
+Run these to calculate KDE for all synthetic data (expect > 15 minutes):
+In triangles_reader.py, make sure models.txt is being read, not a test file.
+In write_hist_3d.py, set DEBUG_PLOTS = False.
+In sample_pcl_calc_hist.py, see above.
+$ rosrun triangle_sampling sample_pcl_calc_hist.py --kde
+$ rosrun triangle_sampling triangles_reader.py --pcd
+
+Run these to do classification on KDE data:
+$ rosrun triangle_sampling triangles_nn.py --kde
+
+
+To get histograms with new bins:
+In sample_pcl_calc_hist.py, change:
+  bins
+  save3D=True
+  saveKDE=False
+  decimeters
+  This will save 3D histograms.
+$ rosrun triangle_sampling sample_pcl_calc_hist.py --hist3d
+
+To get KDE with new bins:
+  bins
+  save3D=False
+  saveKDE=True
+  decimeters
+$ rosrun triangle_sampling sample_pcl_calc_hist.py --kde
+
+
+
+========
+Running with specified nSamples and nSamplesRatio
+ICRA data
+========
+
+This is useful for rapid experimenting.
+
+First sample at a specified density, and save the triangles to density-specific
+  subpath:
+$ rosrun triangle_sampling sample_pcl_calc_hist.py --raw
+$ rosrun triangle_sampling sample_pcl --nSamples 50 --nSamplesRatio 0.95
+
+You can run stats over the triangles.
+First generate a num_triangles.csv file with the sampling density in its file
+  name:
+$ rosrun triangle_sampling triangles_reader.py 50 0.95
+Then run stats using this num_triangles.csv file:
+$ rosrun triangle_sampling triangles_stats.py 50 0.95,
+Plot overlapped number of moves vs number of contacts per move plot, for paper:
+$ rosrun triangle_sampling triangles_stats.py --pcd 0 0 --multi
+
+You can later load up the triangles and compute the histograms, just specify
+  the sampling density so the correct folder can be found:
+$ rosrun triangle_sampling sample_pcl_calc_hist.py --hist3d --nSamples 50 --nSamplesRatio 0.95
+$ rosrun triangle_sampling triangles_reader.py 50 0.95
+
+Run classification on the computed descriptors:
+$ rosrun triangle_sampling triangles_nn.py 50 0.95
+$ rosrun triangle_sampling triangles_nn.py 50 0.95 --kde
+
+
+
+
+========
+ICRA submission quick commands
+========
+
+Use --truetype --notitle flags for everything that plots matplotlib:
+
+The 5 figures generated for paper:
+
+Multi-line nMoves vs number of contacts per move plot:
+$ rosrun triangle_sampling triangles_stats.py --pcd --multi --truetype --notitle 0 0
+
+Two curve accuracy vs sampling rate plot (accuracy numbers are from running triangles_svm.py and triangles_nn.py with random splits, then manually writing down result accuracy in this script):
+$ rosrun triangle_sampling triangles_acc_stats.py --truetype --notitle
+
+SVM nSamples=10 confusion matrix, from 100 splits:
+$ rosrun triangle_sampling triangles_svm.py 10 0.95 --rand_splits --truetype --notitle
+SVM nSamples=300 confusion matrix, from 100 splits:
+$ rosrun triangle_sampling triangles_svm.py 300 0.95 --rand_splits --truetype --notitle
+
+Real robot 6 x 6 per-sample confusion matrix:
+$ rosrun triangle_sampling triangles_nn.py 10 0.95 --meta real_ticks.txt --real --exhaustive --exhaustive_ticks --truetype --notitle
+
