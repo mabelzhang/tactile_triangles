@@ -21,5 +21,5 @@ However, all code files were extracted from packages of working code that were t
 
 Check out the repositories under ROS catkin workspace, e.g. `catkin_ws/src`, then run
 
-`$ catkin_build`
+`$ catkin build`
 
